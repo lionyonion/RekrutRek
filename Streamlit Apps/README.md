@@ -43,6 +43,9 @@ Dashboard ini dibagi menjadi **6 Tab Premium** dengan visualisasi interaktif yan
 
 ## 🛠️ Panduan Instalasi & Menjalankan Dashboard (Lokal)
 
+> [!IMPORTANT]
+> **PENTING:** Anda wajib menginstal seluruh pustaka (*dependencies*) di dalam file `requirements.txt` terlebih dahulu sebelum mencoba menjalankan aplikasi `app.py`. Jika tidak, aplikasi akan mengalami kegagalan *ModuleNotFoundError* karena pustaka seperti `plotly` dan `streamlit` belum terpasang.
+
 Ikuti langkah-langkah mudah berikut untuk menjalankan aplikasi web Streamlit ini di perangkat Windows / macOS / Linux Anda:
 
 ### 1. Prasyarat (*Prerequisites*)
@@ -54,8 +57,8 @@ Buka Terminal / Git Bash / Command Prompt, lalu arahkan ke dalam direktori aplik
 cd "Capstone Project/Streamlit Apps"
 ```
 
-### 3. Instal Dependencies
-Instal seluruh library Python yang diperlukan untuk menjalankan dashboard ini menggunakan file `requirements.txt`:
+### 3. Instal Dependencies Terlebih Dahulu (Wajib)
+Instal seluruh library Python yang diperlukan dari file `requirements.txt` untuk memastikan semua modul terpasang dengan benar sebelum menjalankan aplikasi:
 ```bash
 pip install -r requirements.txt
 ```
@@ -65,7 +68,7 @@ pip install streamlit pandas numpy plotly
 ```
 
 ### 4. Jalankan Aplikasi Streamlit
-Luncurkan server Streamlit lokal dengan menjalankan perintah berikut:
+Setelah seluruh instalasi dependencies selesai, luncurkan server Streamlit lokal dengan menjalankan perintah berikut:
 ```bash
 streamlit run app.py
 ```

@@ -144,6 +144,8 @@ def load_data():
     import os
 
     candidates = [
+        "All data/df_jobs_final.csv",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "All data", "df_jobs_final.csv"),
         "df_jobs_final.csv",
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "df_jobs_final.csv"),
     ]
@@ -152,8 +154,7 @@ def load_data():
     if csv_path is None:
         st.error(
             "❌ File **df_jobs_final.csv** tidak ditemukan.\n\n"
-            "Pastikan file `df_jobs_final.csv` sudah di-upload ke GitHub repo "
-            "di folder yang sama dengan `app.py`."
+            "Pastikan file `df_jobs_final.csv` berada di folder `All data` atau di folder yang sama dengan `app.py`."
         )
         st.stop()
 
@@ -182,6 +183,8 @@ df = load_data()
 def load_candidate_data():
     import os
     candidates = [
+        "All data/all_resumes.csv",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "All data", "all_resumes.csv"),
         "all_resumes.csv",
         "Capstone Project/all_resumes.csv",
         "Capstone Project/Pemrosesan Data Resume/all_resumes.csv",

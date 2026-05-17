@@ -1,0 +1,5 @@
+# Capstone Project - Streamlit App Requirements
+streamlit
+pandas
+numpy
+plotly
