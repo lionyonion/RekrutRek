@@ -266,10 +266,13 @@ def process_single_pdf(task):
         return {'success': False}
 
 class ResumeETLPipeline:
-    def __init__(self, dataset_path):
-        self.dataset_path = os.path.abspath(dataset_path)
-        self.raw_data = []
-        self.processed_df = None
+    def __init__(self, dataset_path_pdf, dataset_path_csv=None):
+        self.dataset_path_pdf = os.path.abspath(dataset_path_pdf) if dataset_path_pdf else None
+        self.dataset_path_csv = os.path.abspath(dataset_path_csv) if dataset_path_csv else None
+        self.raw_data_pdf = []
+        self.raw_data_csv = None
+        self.processed_df_pdf = None
+        self.processed_df_csv = None
         self.assessment_report = {}
 
     def generate_resume_id(self, category, filename):
@@ -298,74 +301,80 @@ class ResumeETLPipeline:
 
     def extract(self):
         """
-        Gathers data from PDF resumes organized by job category folders in parallel using ProcessPoolExecutor.
+        Gathers data from PDF resumes and CSV dataset.
         Extraction Stage of ETL.
         """
-        logging.info(f"Starting Extraction phase from: {self.dataset_path}")
+        logging.info(f"Starting Extraction phase...")
         
-        if not os.path.exists(self.dataset_path):
-            logging.error(f"Dataset path {self.dataset_path} does not exist!")
-            raise FileNotFoundError(f"Dataset path {self.dataset_path} does not exist!")
-
-        self.raw_data = []
-        pdf_tasks = []
-
-        # Traverse directories and collect all PDF paths first
-        for category in os.listdir(self.dataset_path):
-            cat_path = os.path.join(self.dataset_path, category)
-            if not os.path.isdir(cat_path):
-                continue
-
-            for filename in os.listdir(cat_path):
-                if not filename.lower().endswith('.pdf'):
+        self.raw_data_pdf = []
+        if self.dataset_path_pdf and os.path.exists(self.dataset_path_pdf):
+            logging.info(f"Extracting PDF data from: {self.dataset_path_pdf}")
+            pdf_tasks = []
+            for category in os.listdir(self.dataset_path_pdf):
+                cat_path = os.path.join(self.dataset_path_pdf, category)
+                if not os.path.isdir(cat_path):
                     continue
-                pdf_path = os.path.join(cat_path, filename)
-                pdf_tasks.append((category, filename, pdf_path))
 
-        total_files = len(pdf_tasks)
-        logging.info(f"Discovered {total_files} PDF files to extract.")
+                for filename in os.listdir(cat_path):
+                    if not filename.lower().endswith('.pdf'):
+                        continue
+                    pdf_path = os.path.join(cat_path, filename)
+                    pdf_tasks.append((category, filename, pdf_path))
 
-        successful_extracts = 0
-        failed_extracts = 0
+            total_files = len(pdf_tasks)
+            logging.info(f"Discovered {total_files} PDF files to extract.")
 
-        from concurrent.futures import ProcessPoolExecutor, as_completed
-        
-        logging.info("Extracting texts in parallel using ProcessPoolExecutor (Bypassing GIL)...")
-        # Use dynamic process pool based on CPU cores
-        max_workers = min(61, os.cpu_count() or 1)
-        
-        completed_count = 0
-        with ProcessPoolExecutor(max_workers=max_workers) as executor:
-            # Submit tasks
-            futures = {executor.submit(process_single_pdf, task): task for task in pdf_tasks}
+            successful_extracts = 0
+            failed_extracts = 0
+
+            from concurrent.futures import ProcessPoolExecutor, as_completed
             
-            # Retrieve results as they complete (real-time updates)
-            for future in as_completed(futures):
-                completed_count += 1
-                if completed_count % 100 == 0 or completed_count == total_files:
-                    logging.info(f"Progress: Extracted {completed_count}/{total_files} resumes ({completed_count/total_files*100:.1f}%)...")
+            logging.info("Extracting texts in parallel using ProcessPoolExecutor (Bypassing GIL)...")
+            # Use dynamic process pool based on CPU cores
+            max_workers = min(61, os.cpu_count() or 1)
+            
+            completed_count = 0
+            with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                # Submit tasks
+                futures = {executor.submit(process_single_pdf, task): task for task in pdf_tasks}
                 
-                try:
-                    res = future.result()
-                    if res['success']:
-                        res_data = res.copy()
-                        del res_data['success']
-                        self.raw_data.append(res_data)
-                        successful_extracts += 1
-                    else:
+                # Retrieve results as they complete (real-time updates)
+                for future in as_completed(futures):
+                    completed_count += 1
+                    if completed_count % 100 == 0 or completed_count == total_files:
+                        logging.info(f"Progress: Extracted {completed_count}/{total_files} resumes ({completed_count/total_files*100:.1f}%)...")
+                    
+                    try:
+                        res = future.result()
+                        if res['success']:
+                            res_data = res.copy()
+                            del res_data['success']
+                            self.raw_data_pdf.append(res_data)
+                            successful_extracts += 1
+                        else:
+                            failed_extracts += 1
+                    except Exception as e:
+                        logging.error(f"Error extracting PDF: {e}")
                         failed_extracts += 1
-                except Exception as e:
-                    logging.error(f"Error extracting PDF: {e}")
-                    failed_extracts += 1
 
-        logging.info(f"Extraction completed. Total files found: {total_files}")
-        logging.info(f"Successfully extracted: {successful_extracts}, Failed: {failed_extracts}")
+            logging.info(f"Extraction completed. Total files found: {total_files}")
+            logging.info(f"Successfully extracted: {successful_extracts}, Failed: {failed_extracts}")
+            
+            self.assessment_report['total_files_discovered'] = total_files
+            self.assessment_report['successful_extractions'] = successful_extracts
+            self.assessment_report['failed_extractions'] = failed_extracts
         
-        self.assessment_report['total_files_discovered'] = total_files
-        self.assessment_report['successful_extractions'] = successful_extracts
-        self.assessment_report['failed_extractions'] = failed_extracts
+        # CSV Extraction
+        if self.dataset_path_csv and os.path.exists(self.dataset_path_csv):
+            logging.info(f"Extracting CSV data from {self.dataset_path_csv}")
+            try:
+                self.raw_data_csv = pd.read_csv(self.dataset_path_csv)
+                self.assessment_report['csv_total_rows'] = len(self.raw_data_csv)
+                logging.info(f"Successfully extracted {len(self.raw_data_csv)} rows from CSV.")
+            except Exception as e:
+                logging.error(f"Failed to read CSV: {e}")
         
-        return self.raw_data
+        return self.raw_data_pdf
 
     def clean_text(self, text):
         """
@@ -425,39 +434,54 @@ class ResumeETLPipeline:
         """
         logging.info("Starting Data Assessing phase...")
         
-        if not self.raw_data:
+        if not self.raw_data_pdf and self.raw_data_csv is None:
             logging.warning("No raw data available for assessment. Run extract() first.")
             return
 
-        df = pd.DataFrame(self.raw_data)
-        
-        # 1. Check for empty text (missing values in text)
-        empty_text_mask = df['raw_text'].str.strip() == ""
-        empty_text_count = empty_text_mask.sum()
-        
-        # 2. Check for duplicate raw text (duplicate resumes)
-        duplicate_text_mask = df.duplicated(subset=['raw_text'], keep=False)
-        duplicate_count = df.duplicated(subset=['raw_text'], keep='first').sum()
-        
-        # 3. Word and character count stats on raw text
-        df['word_count_raw'] = df['raw_text'].apply(lambda x: len(x.split()) if x else 0)
-        df['char_count_raw'] = df['raw_text'].apply(lambda x: len(x) if x else 0)
-        
-        min_words = df['word_count_raw'].min()
-        max_words = df['word_count_raw'].max()
-        mean_words = df['word_count_raw'].mean()
+        if self.raw_data_pdf:
+            df = pd.DataFrame(self.raw_data_pdf)
+            
+            # 1. Check for empty text (missing values in text)
+            empty_text_mask = df['raw_text'].str.strip() == ""
+            empty_text_count = empty_text_mask.sum()
+            
+            # 2. Check for duplicate raw text (duplicate resumes)
+            duplicate_text_mask = df.duplicated(subset=['raw_text'], keep=False)
+            duplicate_count = df.duplicated(subset=['raw_text'], keep='first').sum()
+            
+            # 3. Word and character count stats on raw text
+            df['word_count_raw'] = df['raw_text'].apply(lambda x: len(x.split()) if x else 0)
+            df['char_count_raw'] = df['raw_text'].apply(lambda x: len(x) if x else 0)
+            
+            min_words = df['word_count_raw'].min()
+            max_words = df['word_count_raw'].max()
+            mean_words = df['word_count_raw'].mean()
 
-        logging.info(f"Assessing complete:")
-        logging.info(f"- Empty/Unreadable resumes found: {empty_text_count}")
-        logging.info(f"- Duplicate resumes found: {duplicate_count}")
-        logging.info(f"- Text Length Stats: Min word count = {min_words}, Max = {max_words}, Avg = {mean_words:.1f}")
+            logging.info(f"Assessing complete:")
+            logging.info(f"- Empty/Unreadable resumes found: {empty_text_count}")
+            logging.info(f"- Duplicate resumes found: {duplicate_count}")
+            logging.info(f"- Text Length Stats: Min word count = {min_words}, Max = {max_words}, Avg = {mean_words:.1f}")
 
-        self.assessment_report['empty_resumes'] = int(empty_text_count)
-        self.assessment_report['duplicate_resumes'] = int(duplicate_count)
-        self.assessment_report['min_word_count'] = int(min_words)
-        self.assessment_report['max_word_count'] = int(max_words)
-        self.assessment_report['avg_word_count'] = float(mean_words)
+            self.assessment_report['empty_resumes'] = int(empty_text_count)
+            self.assessment_report['duplicate_resumes'] = int(duplicate_count)
+            self.assessment_report['min_word_count'] = int(min_words)
+            self.assessment_report['max_word_count'] = int(max_words)
+            self.assessment_report['avg_word_count'] = float(mean_words)
         
+        # CSV Assessment
+        if self.raw_data_csv is not None:
+            df_csv = self.raw_data_csv
+            csv_report = {
+                'total_rows': len(df_csv),
+                'total_columns': len(df_csv.columns),
+                'duplicate_rows': int(df_csv.duplicated().sum())
+            }
+            if 'ComputerSkills' in df_csv.columns:
+                csv_report['missing_skills'] = int(df_csv['ComputerSkills'].isnull().sum())
+            logging.info(f"CSV Assessing complete:")
+            logging.info(f"- Duplicate rows: {csv_report['duplicate_rows']}")
+            self.assessment_report['csv_assessment'] = csv_report
+            
         return self.assessment_report
 
     def transform(self):
@@ -467,89 +491,103 @@ class ResumeETLPipeline:
         """
         logging.info("Starting Transformation phase (Data Cleaning & Feature Engineering)...")
         
-        if not self.raw_data:
+        if not self.raw_data_pdf and self.raw_data_csv is None:
             logging.error("No raw data to transform! Run extract() first.")
             raise ValueError("No raw data to transform! Run extract() first.")
 
-        df = pd.DataFrame(self.raw_data)
+        if self.raw_data_pdf:
+            df = pd.DataFrame(self.raw_data_pdf)
 
-        # 1. Handle missing/empty text issues from Extraction
-        # Mark and logs empty texts
-        df['is_empty'] = df['raw_text'].str.strip() == ""
-        logging.info(f"Filtering out {df['is_empty'].sum()} empty/unreadable resumes.")
-        df = df[~df['is_empty']].copy()
+            # 1. Handle missing/empty text issues from Extraction
+            # Mark and logs empty texts
+            df['is_empty'] = df['raw_text'].str.strip() == ""
+            logging.info(f"Filtering out {df['is_empty'].sum()} empty/unreadable resumes.")
+            df = df[~df['is_empty']].copy()
 
-        # 2. Remove exact duplicate resumes based on text (standard practice for AI modeling)
-        # We keep the first occurrence
-        initial_len = len(df)
-        df = df.drop_duplicates(subset=['raw_text'], keep='first').copy()
-        removed_duplicates = initial_len - len(df)
-        logging.info(f"Removed {removed_duplicates} duplicate resumes during Transformation.")
+            # 2. Remove exact duplicate resumes based on text (standard practice for AI modeling)
+            # We keep the first occurrence
+            initial_len = len(df)
+            df = df.drop_duplicates(subset=['raw_text'], keep='first').copy()
+            removed_duplicates = initial_len - len(df)
+            logging.info(f"Removed {removed_duplicates} duplicate resumes during Transformation.")
 
-        # 3. Perform text cleaning and skill extraction
-        logging.info("Cleaning resume texts...")
-        df['cleaned_text'] = df['raw_text'].apply(self.clean_text)
+            # 3. Perform text cleaning and skill extraction
+            logging.info("Cleaning resume texts...")
+            df['cleaned_text'] = df['raw_text'].apply(self.clean_text)
 
-        logging.info("Extracting keyword skills from resumes...")
-        df['extracted_skills'] = df['cleaned_text'].apply(self.extract_skills_from_text)
+            logging.info("Extracting keyword skills from resumes...")
+            df['extracted_skills'] = df['cleaned_text'].apply(self.extract_skills_from_text)
 
-        # 4. Feature Engineering (Adding metrics)
-        df['word_count'] = df['cleaned_text'].apply(lambda x: len(x.split()))
-        df['char_count'] = df['cleaned_text'].apply(len)
-        df['raw_word_count'] = df['raw_text'].apply(lambda x: len(x.split()))
-        df['raw_char_count'] = df['raw_text'].apply(len)
+            # 4. Feature Engineering (Adding metrics)
+            df['word_count'] = df['cleaned_text'].apply(lambda x: len(x.split()))
+            df['char_count'] = df['cleaned_text'].apply(len)
+            df['raw_word_count'] = df['raw_text'].apply(lambda x: len(x.split()))
+            df['raw_char_count'] = df['raw_text'].apply(len)
 
-        # Drop temporary columns
-        df = df.drop(columns=['is_empty'])
+            # Drop temporary columns
+            df = df.drop(columns=['is_empty'])
 
-        self.processed_df = df
-        logging.info(f"Transformation complete. Cleaned DataFrame size: {len(df)} records.")
-        return df
+            self.processed_df_pdf = df
+            logging.info(f"PDF Transformation complete. Cleaned DataFrame size: {len(df)} records.")
+            
+        if self.raw_data_csv is not None:
+            df_csv = self.raw_data_csv.copy()
+            logging.info("Cleaning CSV data...")
+            
+            initial_len = len(df_csv)
+            df_csv = df_csv.drop_duplicates().copy()
+            logging.info(f"Removed {initial_len - len(df_csv)} duplicate rows in CSV.")
+            
+            if 'ComputerSkills' in df_csv.columns:
+                df_csv['ComputerSkills'] = df_csv['ComputerSkills'].fillna('')
+                df_csv['cleaned_skills'] = df_csv['ComputerSkills'].astype(str).str.replace(';', ', ')
+                df_csv['skill_count'] = df_csv['ComputerSkills'].apply(lambda x: len(str(x).split(';')) if x else 0)
+                
+            self.processed_df_csv = df_csv
+            logging.info(f"CSV Transformation complete. Cleaned DataFrame size: {len(df_csv)} records.")
+            
+        return self.processed_df_pdf
 
-    def load(self, output_csv_path):
+    def load(self, output_csv_path, output_csv_path_csv=None):
         """
         Loads the structured DataFrame into a consolidated CSV file.
         Loading Stage of ETL.
         """
-        logging.info(f"Starting Load phase to: {output_csv_path}")
+        logging.info(f"Starting Load phase...")
         
-        if self.processed_df is None:
-            logging.error("No processed DataFrame to load! Run transform() first.")
-            raise ValueError("No processed DataFrame to load! Run transform() first.")
-
         try:
-            # Ensure output directory exists
-            output_dir = os.path.dirname(output_csv_path)
-            if output_dir and not os.path.exists(output_dir):
-                os.makedirs(output_dir, exist_ok=True)
-
-            # Export to CSV
-            self.processed_df.to_csv(output_csv_path, index=False, encoding='utf-8')
-            logging.info(f"Successfully loaded and saved {len(self.processed_df)} resumes to {output_csv_path}")
-            
-            # Print a few samples to check
-            logging.info("Sample IDs created:")
-            for idx, row in self.processed_df.head(3).iterrows():
-                logging.info(f"- ID: {row['resume_id']} | Category: {row['category']} | Words: {row['word_count']}")
+            if self.processed_df_pdf is not None:
+                output_dir = os.path.dirname(output_csv_path)
+                if output_dir and not os.path.exists(output_dir):
+                    os.makedirs(output_dir, exist_ok=True)
+                self.processed_df_pdf.to_csv(output_csv_path, index=False, encoding='utf-8')
+                logging.info(f"Successfully loaded PDF processed data to {output_csv_path}")
+                
+            if self.processed_df_csv is not None and output_csv_path_csv is not None:
+                output_dir_csv = os.path.dirname(output_csv_path_csv)
+                if output_dir_csv and not os.path.exists(output_dir_csv):
+                    os.makedirs(output_dir_csv, exist_ok=True)
+                self.processed_df_csv.to_csv(output_csv_path_csv, index=False, encoding='utf-8')
+                logging.info(f"Successfully loaded CSV processed data to {output_csv_path_csv}")
                 
         except Exception as e:
-            logging.error(f"Failed to save CSV to {output_csv_path}: {e}")
+            logging.error(f"Failed to save output CSVs: {e}")
             raise e
 
     def aggregate_skills(self, output_csv_path):
         """
         Aggregates skill frequencies per job category and saves to a CSV.
         """
-        if self.processed_df is None:
-            logging.error("No processed DataFrame to aggregate skills! Run transform() first.")
-            raise ValueError("No processed DataFrame to aggregate skills! Run transform() first.")
+        if self.processed_df_pdf is None:
+            logging.error("No PDF processed DataFrame to aggregate skills! Run transform() first.")
+            return pd.DataFrame()
 
         logging.info(f"Starting Skills Aggregation phase to: {output_csv_path}")
 
         aggregation_data = []
 
         # Group by category
-        grouped = self.processed_df.groupby('category')
+        grouped = self.processed_df_pdf.groupby('category')
         for category, group in grouped:
             total_resumes = len(group)
             
@@ -596,27 +634,37 @@ class ResumeETLPipeline:
             logging.warning("No skills aggregated. File not saved.")
             return pd.DataFrame()
 
-    def run_pipeline(self, output_csv_path):
+    def run_pipeline(self, output_csv_path, output_csv_path_csv=None):
         """Orchestrates the entire ETL & Assessment flow."""
         self.extract()
         self.assess()
         self.transform()
-        self.load(output_csv_path)
+        self.load(output_csv_path, output_csv_path_csv)
         
-        # Generate skill aggregation file in the same directory as the main CSV
-        base_dir = os.path.dirname(output_csv_path)
-        agg_csv_path = os.path.join(base_dir, "skills_by_category.csv")
-        self.aggregate_skills(agg_csv_path)
+        if self.processed_df_pdf is not None:
+            # Generate skill aggregation file in the same directory as the main CSV
+            base_dir = os.path.dirname(output_csv_path)
+            agg_csv_path = os.path.join(base_dir, "skills_by_category.csv")
+            self.aggregate_skills(agg_csv_path)
         
-        return self.processed_df, self.assessment_report
+        return self.processed_df_pdf, self.processed_df_csv, self.assessment_report
 
 if __name__ == "__main__":
     # Define paths
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    dataset_dir = os.path.join(base_dir, "Dataset Resume [PDF]")
-    output_csv = os.path.join(base_dir, "all_resumes.csv")
+    # Adjust path dynamically if needed
+    dataset_dir_pdf = os.path.join(base_dir, "Dataset Resume", "PDF")
+    if not os.path.exists(dataset_dir_pdf):
+        dataset_dir_pdf = os.path.join(base_dir, "Dataset Resume [PDF]") # Fallback
+        
+    dataset_dir_csv = os.path.join(base_dir, "Dataset Resume", "CSV", "stackoverflow_full.csv")
+    if not os.path.exists(dataset_dir_csv):
+        dataset_dir_csv = os.path.join(base_dir, "stackoverflow_full.csv") # Fallback
+    
+    output_pdf_csv = os.path.join(base_dir, "all_resumes.csv")
+    output_csv_csv = os.path.join(base_dir, "all_stackoverflow_resumes.csv")
     
     logging.info("Executing Resume ETL Pipeline from CLI...")
-    pipeline = ResumeETLPipeline(dataset_dir)
-    pipeline.run_pipeline(output_csv)
+    pipeline = ResumeETLPipeline(dataset_dir_pdf, dataset_dir_csv)
+    pipeline.run_pipeline(output_pdf_csv, output_csv_csv)
     logging.info("ETL Pipeline Execution Finished Successfully!")
