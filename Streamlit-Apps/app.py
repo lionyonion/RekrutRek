@@ -183,14 +183,14 @@ df = load_data()
 def load_candidate_data():
     import os
     candidates = [
-        "All data/all_resumes.csv",
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "All data", "all_resumes.csv"),
-        "all_resumes.csv",
-        "Capstone Project/all_resumes.csv",
-        "Capstone Project/Pemrosesan Data Resume/all_resumes.csv",
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "all_resumes.csv"),
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Pemrosesan Data Resume", "all_resumes.csv"),
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "all_resumes.csv"),
+        "All data/merged_all_resumes.csv",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "All data", "merged_all_resumes.csv"),
+        "merged_all_resumes.csv",
+        "Capstone Project/merged_all_resumes.csv",
+        "Capstone Project/Pemrosesan Data Resume/merged_all_resumes.csv",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "merged_all_resumes.csv"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Pemrosesan Data Resume", "merged_all_resumes.csv"),
+        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "merged_all_resumes.csv"),
     ]
     csv_path = next((p for p in candidates if os.path.exists(p)), None)
     if csv_path is None:
@@ -769,7 +769,7 @@ with tab5:
 # ══════════════════════════════════════════════════════════════════
 with tab6:
     if df_resumes.empty:
-        st.warning("⚠️ Dataset Pelamar (all_resumes.csv) tidak ditemukan. Silakan jalankan ETL pipeline terlebih dahulu.")
+        st.warning("⚠️ Dataset Pelamar (merged_all_resumes.csv) tidak ditemukan. Silakan jalankan ETL pipeline terlebih dahulu.")
     else:
         st.markdown('<div class="section-title">👥 Analisis Sebaran & Kualitas Profil Pelamar</div>', unsafe_allow_html=True)
         
