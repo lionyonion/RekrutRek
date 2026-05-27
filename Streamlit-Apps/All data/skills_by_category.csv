@@ -36,22 +36,22 @@ ACCOUNTANT,118,interviewing,5,4.24
 ACCOUNTANT,118,mentoring,4,3.39
 ACCOUNTANT,118,medical records,4,3.39
 ACCOUNTANT,118,litigation,4,3.39
+ACCOUNTANT,118,photography,3,2.54
 ACCOUNTANT,118,portfolio management,3,2.54
 ACCOUNTANT,118,clinical,3,2.54
-ACCOUNTANT,118,photography,3,2.54
 ACCOUNTANT,118,tutoring,3,2.54
 ACCOUNTANT,118,performance management,3,2.54
 ACCOUNTANT,118,crm,3,2.54
 ACCOUNTANT,118,curriculum development,3,2.54
 ACCOUNTANT,118,surgery,3,2.54
+ACCOUNTANT,118,farming,2,1.69
 ACCOUNTANT,118,photoshop,2,1.69
 ACCOUNTANT,118,illustrator,2,1.69
-ACCOUNTANT,118,farming,2,1.69
 ACCOUNTANT,118,merchandising,2,1.69
 ACCOUNTANT,118,change management,2,1.69
 ACCOUNTANT,118,intellectual property,2,1.69
-ACCOUNTANT,118,call center,2,1.69
 ACCOUNTANT,118,diagnosis,2,1.69
+ACCOUNTANT,118,call center,2,1.69
 ACCOUNTANT,118,market research,2,1.69
 ACCOUNTANT,118,nutrition planning,2,1.69
 ACCOUNTANT,118,conflict resolution,2,1.69
@@ -73,8 +73,8 @@ ACCOUNTANT,118,electrical circuits,1,0.85
 ACCOUNTANT,118,piloting,1,0.85
 ACCOUNTANT,118,social media,1,0.85
 ACCOUNTANT,118,pharmacology,1,0.85
-ACCOUNTANT,118,business analysis,1,0.85
 ACCOUNTANT,118,event planning,1,0.85
+ACCOUNTANT,118,business analysis,1,0.85
 ACCOUNTANT,118,textiles,1,0.85
 ACCOUNTANT,118,patient care,1,0.85
 ACCOUNTANT,118,nursing,1,0.85
@@ -93,14 +93,14 @@ ADVOCATE,118,clinical,26,22.03
 ADVOCATE,118,marketing,26,22.03
 ADVOCATE,118,recruitment,25,21.19
 ADVOCATE,118,litigation,22,18.64
-ADVOCATE,118,payroll,21,17.8
 ADVOCATE,118,strategy,21,17.8
 ADVOCATE,118,conflict resolution,21,17.8
+ADVOCATE,118,payroll,21,17.8
 ADVOCATE,118,interviewing,20,16.95
 ADVOCATE,118,advocacy,20,16.95
 ADVOCATE,118,banking,18,15.25
-ADVOCATE,118,nursing,18,15.25
 ADVOCATE,118,public speaking,18,15.25
+ADVOCATE,118,nursing,18,15.25
 ADVOCATE,118,call center,17,14.41
 ADVOCATE,118,contract drafting,17,14.41
 ADVOCATE,118,accounting,16,13.56
@@ -112,8 +112,8 @@ ADVOCATE,118,auditing,14,11.86
 ADVOCATE,118,cpr,13,11.02
 ADVOCATE,118,hr policies,12,10.17
 ADVOCATE,118,taxation,11,9.32
-ADVOCATE,118,client acquisition,11,9.32
 ADVOCATE,118,medical records,11,9.32
+ADVOCATE,118,client acquisition,11,9.32
 ADVOCATE,118,curriculum development,10,8.47
 ADVOCATE,118,surgery,10,8.47
 ADVOCATE,118,crm,9,7.63
@@ -136,8 +136,8 @@ ADVOCATE,118,culinary arts,5,4.24
 ADVOCATE,118,safety management,5,4.24
 ADVOCATE,118,special education,5,4.24
 ADVOCATE,118,technical support,4,3.39
-ADVOCATE,118,onboarding,4,3.39
 ADVOCATE,118,sql,4,3.39
+ADVOCATE,118,onboarding,4,3.39
 ADVOCATE,118,event planning,4,3.39
 ADVOCATE,118,painting,4,3.39
 ADVOCATE,118,mediation,4,3.39
@@ -149,11 +149,11 @@ ADVOCATE,118,sketching,3,2.54
 ADVOCATE,118,classroom management,3,2.54
 ADVOCATE,118,performance management,3,2.54
 ADVOCATE,118,electrical circuits,2,1.69
-ADVOCATE,118,photography,2,1.69
 ADVOCATE,118,brand management,2,1.69
+ADVOCATE,118,photography,2,1.69
 ADVOCATE,118,lesson planning,2,1.69
-ADVOCATE,118,quickbooks,2,1.69
 ADVOCATE,118,change management,2,1.69
+ADVOCATE,118,quickbooks,2,1.69
 ADVOCATE,118,ledger,2,1.69
 ADVOCATE,118,intellectual property,2,1.69
 ADVOCATE,118,seo,2,1.69
@@ -223,9 +223,9 @@ AGRICULTURE,63,first aid,4,6.35
 AGRICULTURE,63,clinical,4,6.35
 AGRICULTURE,63,reconciliation,4,6.35
 AGRICULTURE,63,nursing,4,6.35
-AGRICULTURE,63,diagnosis,4,6.35
 AGRICULTURE,63,tutoring,4,6.35
 AGRICULTURE,63,crop management,4,6.35
+AGRICULTURE,63,diagnosis,4,6.35
 AGRICULTURE,63,grading,4,6.35
 AGRICULTURE,63,classroom management,4,6.35
 AGRICULTURE,63,lesson planning,4,6.35
@@ -233,8 +233,8 @@ AGRICULTURE,63,html,3,4.76
 AGRICULTURE,63,medical records,3,4.76
 AGRICULTURE,63,sql,3,4.76
 AGRICULTURE,63,agile,3,4.76
-AGRICULTURE,63,vehicle diagnostics,3,4.76
 AGRICULTURE,63,advocacy,3,4.76
+AGRICULTURE,63,vehicle diagnostics,3,4.76
 AGRICULTURE,63,pest control,3,4.76
 AGRICULTURE,63,forecasting,3,4.76
 AGRICULTURE,63,sap,3,4.76
@@ -247,17 +247,17 @@ AGRICULTURE,63,pharmacology,2,3.17
 AGRICULTURE,63,python,2,3.17
 AGRICULTURE,63,portfolio management,2,3.17
 AGRICULTURE,63,safety management,2,3.17
+AGRICULTURE,63,quickbooks,2,3.17
 AGRICULTURE,63,kitchen management,2,3.17
 AGRICULTURE,63,change management,2,3.17
-AGRICULTURE,63,quickbooks,2,3.17
 AGRICULTURE,63,market research,2,3.17
 AGRICULTURE,63,photography,2,3.17
 AGRICULTURE,63,media relations,2,3.17
 AGRICULTURE,63,event planning,2,3.17
 AGRICULTURE,63,javascript,2,3.17
 AGRICULTURE,63,css,2,3.17
-AGRICULTURE,63,process optimization,2,3.17
 AGRICULTURE,63,cpa,2,3.17
+AGRICULTURE,63,process optimization,2,3.17
 AGRICULTURE,63,sketching,2,3.17
 AGRICULTURE,63,photoshop,2,3.17
 AGRICULTURE,63,piloting,2,3.17
@@ -293,10 +293,10 @@ AGRICULTURE,63,strength training,1,1.59
 AGRICULTURE,63,nosql,1,1.59
 AGRICULTURE,63,ui/ux,1,1.59
 AGRICULTURE,63,matlab,1,1.59
-AGRICULTURE,63,electrical circuits,1,1.59
 AGRICULTURE,63,brake systems,1,1.59
 AGRICULTURE,63,menu planning,1,1.59
 AGRICULTURE,63,food preparation,1,1.59
+AGRICULTURE,63,electrical circuits,1,1.59
 AGRICULTURE,63,indesign,1,1.59
 AGRICULTURE,63,3d modeling,1,1.59
 AGRICULTURE,63,painting,1,1.59
@@ -385,9 +385,9 @@ APPAREL,97,php,1,1.03
 APPAREL,97,creative direction,1,1.03
 APPAREL,97,react,1,1.03
 APPAREL,97,auto repair,1,1.03
-APPAREL,97,plc programming,1,1.03
 APPAREL,97,medical records,1,1.03
 APPAREL,97,technical support,1,1.03
+APPAREL,97,plc programming,1,1.03
 APPAREL,97,vehicle diagnostics,1,1.03
 APPAREL,97,cpa,1,1.03
 APPAREL,97,piloting,1,1.03
@@ -398,8 +398,8 @@ APPAREL,97,personal training,1,1.03
 APPAREL,97,nutrition planning,1,1.03
 APPAREL,97,brake systems,1,1.03
 APPAREL,97,avionics,1,1.03
-APPAREL,97,ui/ux,1,1.03
 APPAREL,97,ledger,1,1.03
+APPAREL,97,ui/ux,1,1.03
 APPAREL,97,surgery,1,1.03
 APPAREL,97,special education,1,1.03
 APPAREL,97,engine tuning,1,1.03
@@ -418,8 +418,8 @@ ARTS,103,mentoring,21,20.39
 ARTS,103,social media,20,19.42
 ARTS,103,billing,17,16.5
 ARTS,103,photoshop,16,15.53
-ARTS,103,classroom management,13,12.62
 ARTS,103,tutoring,13,12.62
+ARTS,103,classroom management,13,12.62
 ARTS,103,networks,13,12.62
 ARTS,103,contract drafting,13,12.62
 ARTS,103,advertising,13,12.62
@@ -458,15 +458,15 @@ ARTS,103,food preparation,5,4.85
 ARTS,103,client acquisition,5,4.85
 ARTS,103,food safety,5,4.85
 ARTS,103,employee relations,5,4.85
-ARTS,103,sap,5,4.85
 ARTS,103,conflict resolution,5,4.85
-ARTS,103,curating,4,3.88
+ARTS,103,sap,5,4.85
 ARTS,103,kitchen management,4,3.88
 ARTS,103,electrical circuits,4,3.88
-ARTS,103,media relations,4,3.88
-ARTS,103,photography,4,3.88
-ARTS,103,advocacy,4,3.88
+ARTS,103,curating,4,3.88
 ARTS,103,piloting,4,3.88
+ARTS,103,media relations,4,3.88
+ARTS,103,advocacy,4,3.88
+ARTS,103,photography,4,3.88
 ARTS,103,educational technology,4,3.88
 ARTS,103,quickbooks,4,3.88
 ARTS,103,onboarding,4,3.88
@@ -474,17 +474,17 @@ ARTS,103,nutrition planning,4,3.88
 ARTS,103,performance management,4,3.88
 ARTS,103,risk management,4,3.88
 ARTS,103,patient care,3,2.91
-ARTS,103,menu planning,3,2.91
 ARTS,103,reconciliation,3,2.91
 ARTS,103,litigation,3,2.91
+ARTS,103,menu planning,3,2.91
 ARTS,103,merchandising,3,2.91
 ARTS,103,ui/ux,3,2.91
-ARTS,103,brand management,3,2.91
 ARTS,103,change management,3,2.91
+ARTS,103,brand management,3,2.91
 ARTS,103,surgery,2,1.94
-ARTS,103,plc programming,2,1.94
 ARTS,103,forecasting,2,1.94
 ARTS,103,market research,2,1.94
+ARTS,103,plc programming,2,1.94
 ARTS,103,cyber security,2,1.94
 ARTS,103,taxation,2,1.94
 ARTS,103,ruby,2,1.94
@@ -541,54 +541,54 @@ AUTOMOBILE,36,networks,4,11.11
 AUTOMOBILE,36,financial analysis,4,11.11
 AUTOMOBILE,36,risk management,3,8.33
 AUTOMOBILE,36,public speaking,3,8.33
-AUTOMOBILE,36,safety management,3,8.33
 AUTOMOBILE,36,forecasting,3,8.33
 AUTOMOBILE,36,auto repair,3,8.33
+AUTOMOBILE,36,safety management,3,8.33
 AUTOMOBILE,36,payroll,3,8.33
 AUTOMOBILE,36,hr policies,3,8.33
 AUTOMOBILE,36,cpr,2,5.56
-AUTOMOBILE,36,conflict resolution,2,5.56
-AUTOMOBILE,36,photoshop,2,5.56
-AUTOMOBILE,36,illustrator,2,5.56
 AUTOMOBILE,36,python,2,5.56
 AUTOMOBILE,36,culinary arts,2,5.56
 AUTOMOBILE,36,matlab,2,5.56
+AUTOMOBILE,36,conflict resolution,2,5.56
+AUTOMOBILE,36,photoshop,2,5.56
+AUTOMOBILE,36,illustrator,2,5.56
 AUTOMOBILE,36,client acquisition,2,5.56
 AUTOMOBILE,36,taxation,2,5.56
 AUTOMOBILE,36,reconciliation,2,5.56
-AUTOMOBILE,36,java,2,5.56
-AUTOMOBILE,36,painting,2,5.56
 AUTOMOBILE,36,cyber security,2,5.56
 AUTOMOBILE,36,market research,2,5.56
+AUTOMOBILE,36,java,2,5.56
+AUTOMOBILE,36,painting,2,5.56
 AUTOMOBILE,36,crm,2,5.56
 AUTOMOBILE,36,technical support,2,5.56
 AUTOMOBILE,36,legal counsel,1,2.78
+AUTOMOBILE,36,aircraft maintenance,1,2.78
+AUTOMOBILE,36,avionics,1,2.78
 AUTOMOBILE,36,ledger,1,2.78
 AUTOMOBILE,36,flight operations,1,2.78
 AUTOMOBILE,36,air traffic control,1,2.78
-AUTOMOBILE,36,aircraft maintenance,1,2.78
-AUTOMOBILE,36,avionics,1,2.78
-AUTOMOBILE,36,nursing,1,2.78
-AUTOMOBILE,36,farming,1,2.78
 AUTOMOBILE,36,legal research,1,2.78
 AUTOMOBILE,36,mediation,1,2.78
+AUTOMOBILE,36,nursing,1,2.78
+AUTOMOBILE,36,farming,1,2.78
 AUTOMOBILE,36,vehicle diagnostics,1,2.78
+AUTOMOBILE,36,first aid,1,2.78
 AUTOMOBILE,36,employee relations,1,2.78
 AUTOMOBILE,36,curriculum development,1,2.78
 AUTOMOBILE,36,onboarding,1,2.78
-AUTOMOBILE,36,first aid,1,2.78
 AUTOMOBILE,36,quickbooks,1,2.78
 AUTOMOBILE,36,electrical circuits,1,2.78
 AUTOMOBILE,36,social media,1,2.78
 AUTOMOBILE,36,brand management,1,2.78
 AUTOMOBILE,36,telemarketing,1,2.78
+AUTOMOBILE,36,menu planning,1,2.78
 AUTOMOBILE,36,machine learning,1,2.78
 AUTOMOBILE,36,3d modeling,1,2.78
 AUTOMOBILE,36,aerodynamics,1,2.78
 AUTOMOBILE,36,solidworks,1,2.78
 AUTOMOBILE,36,mechanical design,1,2.78
 AUTOMOBILE,36,plc programming,1,2.78
-AUTOMOBILE,36,menu planning,1,2.78
 AUTOMOBILE,36,creative direction,1,2.78
 AUTOMOBILE,36,tutoring,1,2.78
 AUTOMOBILE,36,food preparation,1,2.78
@@ -630,8 +630,8 @@ AVIATION,116,recruitment,10,8.62
 AVIATION,116,financial analysis,8,6.9
 AVIATION,116,first aid,8,6.9
 AVIATION,116,html,7,6.03
-AVIATION,116,technical support,7,6.03
 AVIATION,116,forecasting,7,6.03
+AVIATION,116,technical support,7,6.03
 AVIATION,116,reconciliation,7,6.03
 AVIATION,116,conflict resolution,7,6.03
 AVIATION,116,matlab,6,5.17
@@ -659,8 +659,8 @@ AVIATION,116,java,3,2.59
 AVIATION,116,python,3,2.59
 AVIATION,116,css,3,2.59
 AVIATION,116,sql,3,2.59
-AVIATION,116,litigation,3,2.59
 AVIATION,116,performance management,3,2.59
+AVIATION,116,litigation,3,2.59
 AVIATION,116,curriculum development,3,2.59
 AVIATION,116,advertising,3,2.59
 AVIATION,116,quickbooks,3,2.59
@@ -698,9 +698,9 @@ AVIATION,116,talent acquisition,1,0.86
 AVIATION,116,culinary arts,1,0.86
 AVIATION,116,plating,1,0.86
 AVIATION,116,tutoring,1,0.86
-AVIATION,116,cyber security,1,0.86
 AVIATION,116,brand management,1,0.86
 AVIATION,116,tailoring,1,0.86
+AVIATION,116,cyber security,1,0.86
 AVIATION,116,livestock,1,0.86
 AVIATION,116,legal research,1,0.86
 AVIATION,116,educational technology,1,0.86
@@ -813,11 +813,11 @@ BANKING,115,kitchen management,1,0.87
 BANKING,115,food safety,1,0.87
 BANKING,115,plating,1,0.87
 BANKING,115,vue,1,0.87
+BANKING,115,advocacy,1,0.87
 BANKING,115,machine learning,1,0.87
 BANKING,115,matlab,1,0.87
-BANKING,115,advocacy,1,0.87
-BANKING,115,farming,1,0.87
 BANKING,115,telemarketing,1,0.87
+BANKING,115,farming,1,0.87
 BANKING,115,css,1,0.87
 BPO,22,training,19,86.36
 BPO,22,sales,15,68.18
@@ -837,8 +837,8 @@ BPO,22,mentoring,5,22.73
 BPO,22,change management,5,22.73
 BPO,22,auditing,5,22.73
 BPO,22,banking,5,22.73
-BPO,22,data entry,4,18.18
 BPO,22,risk management,4,18.18
+BPO,22,data entry,4,18.18
 BPO,22,reconciliation,4,18.18
 BPO,22,hr policies,4,18.18
 BPO,22,forecasting,4,18.18
@@ -868,24 +868,24 @@ BPO,22,onboarding,1,4.55
 BPO,22,public speaking,1,4.55
 BPO,22,portfolio management,1,4.55
 BPO,22,conflict resolution,1,4.55
-BPO,22,javascript,1,4.55
-BPO,22,html,1,4.55
-BPO,22,linux,1,4.55
-BPO,22,agile,1,4.55
 BPO,22,css,1,4.55
 BPO,22,cyber security,1,4.55
 BPO,22,vehicle diagnostics,1,4.55
 BPO,22,engine tuning,1,4.55
+BPO,22,javascript,1,4.55
+BPO,22,html,1,4.55
+BPO,22,linux,1,4.55
+BPO,22,agile,1,4.55
 BPO,22,illustrator,1,4.55
 BPO,22,graphic design,1,4.55
 BPO,22,first aid,1,4.55
 BPO,22,employee relations,1,4.55
 BPO,22,talent acquisition,1,4.55
 BPO,22,brand management,1,4.55
-BPO,22,ledger,1,4.55
-BPO,22,business analysis,1,4.55
 BPO,22,nursing,1,4.55
 BPO,22,advocacy,1,4.55
+BPO,22,ledger,1,4.55
+BPO,22,business analysis,1,4.55
 BPO,22,cpa,1,4.55
 BUSINESS-DEVELOPMENT,119,training,119,100.0
 BUSINESS-DEVELOPMENT,119,sales,111,93.28
@@ -927,13 +927,13 @@ BUSINESS-DEVELOPMENT,119,clinical,7,5.88
 BUSINESS-DEVELOPMENT,119,call center,7,5.88
 BUSINESS-DEVELOPMENT,119,photoshop,7,5.88
 BUSINESS-DEVELOPMENT,119,diagnosis,7,5.88
+BUSINESS-DEVELOPMENT,119,engine tuning,6,5.04
 BUSINESS-DEVELOPMENT,119,business analysis,6,5.04
 BUSINESS-DEVELOPMENT,119,event planning,6,5.04
-BUSINESS-DEVELOPMENT,119,engine tuning,6,5.04
 BUSINESS-DEVELOPMENT,119,nursing,5,4.2
+BUSINESS-DEVELOPMENT,119,telemarketing,5,4.2
 BUSINESS-DEVELOPMENT,119,litigation,5,4.2
 BUSINESS-DEVELOPMENT,119,seo,5,4.2
-BUSINESS-DEVELOPMENT,119,telemarketing,5,4.2
 BUSINESS-DEVELOPMENT,119,sem,5,4.2
 BUSINESS-DEVELOPMENT,119,quickbooks,4,3.36
 BUSINESS-DEVELOPMENT,119,illustrator,4,3.36
@@ -946,14 +946,14 @@ BUSINESS-DEVELOPMENT,119,piloting,4,3.36
 BUSINESS-DEVELOPMENT,119,performance management,4,3.36
 BUSINESS-DEVELOPMENT,119,cpr,3,2.52
 BUSINESS-DEVELOPMENT,119,reconciliation,3,2.52
-BUSINESS-DEVELOPMENT,119,python,3,2.52
 BUSINESS-DEVELOPMENT,119,indesign,3,2.52
+BUSINESS-DEVELOPMENT,119,python,3,2.52
 BUSINESS-DEVELOPMENT,119,onboarding,3,2.52
 BUSINESS-DEVELOPMENT,119,nutrition planning,3,2.52
 BUSINESS-DEVELOPMENT,119,html,3,2.52
 BUSINESS-DEVELOPMENT,119,kitchen management,3,2.52
-BUSINESS-DEVELOPMENT,119,change management,3,2.52
 BUSINESS-DEVELOPMENT,119,ui/ux,3,2.52
+BUSINESS-DEVELOPMENT,119,change management,3,2.52
 BUSINESS-DEVELOPMENT,119,culinary arts,2,1.68
 BUSINESS-DEVELOPMENT,119,menu planning,2,1.68
 BUSINESS-DEVELOPMENT,119,graphic design,2,1.68
@@ -965,9 +965,9 @@ BUSINESS-DEVELOPMENT,119,pharmacology,2,1.68
 BUSINESS-DEVELOPMENT,119,patient care,2,1.68
 BUSINESS-DEVELOPMENT,119,mediation,1,0.84
 BUSINESS-DEVELOPMENT,119,blueprint reading,1,0.84
-BUSINESS-DEVELOPMENT,119,linux,1,0.84
 BUSINESS-DEVELOPMENT,119,food safety,1,0.84
 BUSINESS-DEVELOPMENT,119,plating,1,0.84
+BUSINESS-DEVELOPMENT,119,linux,1,0.84
 BUSINESS-DEVELOPMENT,119,pest control,1,0.84
 BUSINESS-DEVELOPMENT,119,strength training,1,0.84
 BUSINESS-DEVELOPMENT,119,ledger,1,0.84
@@ -979,8 +979,8 @@ BUSINESS-DEVELOPMENT,119,grading,1,0.84
 BUSINESS-DEVELOPMENT,119,personal training,1,0.84
 BUSINESS-DEVELOPMENT,119,nosql,1,0.84
 BUSINESS-DEVELOPMENT,119,talent acquisition,1,0.84
-BUSINESS-DEVELOPMENT,119,portfolio management,1,0.84
 BUSINESS-DEVELOPMENT,119,surgery,1,0.84
+BUSINESS-DEVELOPMENT,119,portfolio management,1,0.84
 BUSINESS-DEVELOPMENT,119,intellectual property,1,0.84
 BUSINESS-DEVELOPMENT,119,cyber security,1,0.84
 BUSINESS-DEVELOPMENT,119,advocacy,1,0.84
@@ -1119,8 +1119,8 @@ CONSTRUCTION,112,public speaking,9,8.04
 CONSTRUCTION,112,3d modeling,8,7.14
 CONSTRUCTION,112,mentoring,8,7.14
 CONSTRUCTION,112,risk management,8,7.14
-CONSTRUCTION,112,technical support,7,6.25
 CONSTRUCTION,112,auditing,7,6.25
+CONSTRUCTION,112,technical support,7,6.25
 CONSTRUCTION,112,photoshop,7,6.25
 CONSTRUCTION,112,quickbooks,7,6.25
 CONSTRUCTION,112,hr policies,7,6.25
@@ -1139,15 +1139,15 @@ CONSTRUCTION,112,farming,4,3.57
 CONSTRUCTION,112,sap,4,3.57
 CONSTRUCTION,112,employee relations,4,3.57
 CONSTRUCTION,112,sql,3,2.68
-CONSTRUCTION,112,sketching,3,2.68
 CONSTRUCTION,112,diagnosis,3,2.68
+CONSTRUCTION,112,sketching,3,2.68
 CONSTRUCTION,112,business analysis,3,2.68
 CONSTRUCTION,112,interviewing,3,2.68
 CONSTRUCTION,112,advertising,3,2.68
 CONSTRUCTION,112,nutrition planning,3,2.68
 CONSTRUCTION,112,ledger,3,2.68
-CONSTRUCTION,112,aws,2,1.79
 CONSTRUCTION,112,graphic design,2,1.79
+CONSTRUCTION,112,aws,2,1.79
 CONSTRUCTION,112,auto repair,2,1.79
 CONSTRUCTION,112,matlab,2,1.79
 CONSTRUCTION,112,irrigation,2,1.79
@@ -1183,13 +1183,13 @@ CONSTRUCTION,112,javascript,1,0.89
 CONSTRUCTION,112,php,1,0.89
 CONSTRUCTION,112,html,1,0.89
 CONSTRUCTION,112,css,1,0.89
-CONSTRUCTION,112,livestock,1,0.89
 CONSTRUCTION,112,telemarketing,1,0.89
+CONSTRUCTION,112,livestock,1,0.89
 CONSTRUCTION,112,cyber security,1,0.89
 CONSTRUCTION,112,cpa,1,0.89
-CONSTRUCTION,112,air traffic control,1,0.89
 CONSTRUCTION,112,performance management,1,0.89
 CONSTRUCTION,112,market research,1,0.89
+CONSTRUCTION,112,air traffic control,1,0.89
 CONSULTANT,115,training,104,90.43
 CONSULTANT,115,sales,63,54.78
 CONSULTANT,115,leadership,48,41.74
@@ -1208,12 +1208,12 @@ CONSULTANT,115,public speaking,22,19.13
 CONSULTANT,115,auditing,22,19.13
 CONSULTANT,115,billing,21,18.26
 CONSULTANT,115,recruitment,19,16.52
-CONSULTANT,115,payroll,17,14.78
 CONSULTANT,115,html,17,14.78
+CONSULTANT,115,payroll,17,14.78
 CONSULTANT,115,banking,17,14.78
-CONSULTANT,115,social media,16,13.91
 CONSULTANT,115,change management,16,13.91
 CONSULTANT,115,mentoring,16,13.91
+CONSULTANT,115,social media,16,13.91
 CONSULTANT,115,taxation,16,13.91
 CONSULTANT,115,clinical,16,13.91
 CONSULTANT,115,forecasting,16,13.91
@@ -1224,14 +1224,14 @@ CONSULTANT,115,technical support,13,11.3
 CONSULTANT,115,agile,13,11.3
 CONSULTANT,115,reconciliation,11,9.57
 CONSULTANT,115,crm,11,9.57
-CONSULTANT,115,linux,11,9.57
 CONSULTANT,115,market research,11,9.57
+CONSULTANT,115,linux,11,9.57
 CONSULTANT,115,javascript,11,9.57
 CONSULTANT,115,sap,10,8.7
 CONSULTANT,115,java,10,8.7
-CONSULTANT,115,quickbooks,9,7.83
-CONSULTANT,115,media relations,9,7.83
 CONSULTANT,115,negotiation,9,7.83
+CONSULTANT,115,media relations,9,7.83
+CONSULTANT,115,quickbooks,9,7.83
 CONSULTANT,115,conflict resolution,9,7.83
 CONSULTANT,115,risk management,8,6.96
 CONSULTANT,115,nursing,8,6.96
@@ -1299,13 +1299,13 @@ CONSULTANT,115,portfolio management,1,0.87
 CONSULTANT,115,strength training,1,0.87
 CONSULTANT,115,advocacy,1,0.87
 CONSULTANT,115,blueprint reading,1,0.87
-CONSULTANT,115,partnership development,1,0.87
 CONSULTANT,115,soil science,1,0.87
+CONSULTANT,115,partnership development,1,0.87
 CONSULTANT,115,legal counsel,1,0.87
 CONSULTANT,115,mediation,1,0.87
 CONSULTANT,115,angular,1,0.87
-CONSULTANT,115,matlab,1,0.87
 CONSULTANT,115,masonry,1,0.87
+CONSULTANT,115,matlab,1,0.87
 CONSULTANT,115,curating,1,0.87
 CONSULTANT,115,process optimization,1,0.87
 CONSULTANT,115,typescript,1,0.87
@@ -1359,8 +1359,8 @@ DESIGNER,107,agile,5,4.67
 DESIGNER,107,mechanical design,4,3.74
 DESIGNER,107,fashion design,4,3.74
 DESIGNER,107,linux,4,3.74
-DESIGNER,107,auditing,4,3.74
 DESIGNER,107,patient care,4,3.74
+DESIGNER,107,auditing,4,3.74
 DESIGNER,107,electrical circuits,4,3.74
 DESIGNER,107,interviewing,4,3.74
 DESIGNER,107,crm,4,3.74
@@ -1384,14 +1384,14 @@ DESIGNER,107,creative direction,3,2.8
 DESIGNER,107,tailoring,2,1.87
 DESIGNER,107,python,2,1.87
 DESIGNER,107,matlab,2,1.87
+DESIGNER,107,javascript,2,1.87
+DESIGNER,107,technical support,2,1.87
 DESIGNER,107,java,2,1.87
 DESIGNER,107,php,2,1.87
 DESIGNER,107,nursing,2,1.87
 DESIGNER,107,cpr,2,1.87
-DESIGNER,107,javascript,2,1.87
-DESIGNER,107,technical support,2,1.87
-DESIGNER,107,reconciliation,2,1.87
 DESIGNER,107,aws,2,1.87
+DESIGNER,107,reconciliation,2,1.87
 DESIGNER,107,avionics,2,1.87
 DESIGNER,107,soil science,2,1.87
 DESIGNER,107,farming,2,1.87
@@ -1402,13 +1402,13 @@ DESIGNER,107,video editing,2,1.87
 DESIGNER,107,conflict resolution,2,1.87
 DESIGNER,107,pharmacology,2,1.87
 DESIGNER,107,carpentry,1,0.93
+DESIGNER,107,pedagogy,1,0.93
 DESIGNER,107,surgery,1,0.93
 DESIGNER,107,special education,1,0.93
-DESIGNER,107,pedagogy,1,0.93
 DESIGNER,107,aerodynamics,1,0.93
-DESIGNER,107,first aid,1,0.93
 DESIGNER,107,crop management,1,0.93
 DESIGNER,107,pest control,1,0.93
+DESIGNER,107,first aid,1,0.93
 DESIGNER,107,classroom management,1,0.93
 DESIGNER,107,intellectual property,1,0.93
 DESIGNER,107,auto repair,1,0.93
@@ -1467,8 +1467,8 @@ DIGITAL-MEDIA,96,negotiation,9,9.38
 DIGITAL-MEDIA,96,banking,9,9.38
 DIGITAL-MEDIA,96,indesign,9,9.38
 DIGITAL-MEDIA,96,agile,8,8.33
-DIGITAL-MEDIA,96,graphic design,8,8.33
 DIGITAL-MEDIA,96,technical support,8,8.33
+DIGITAL-MEDIA,96,graphic design,8,8.33
 DIGITAL-MEDIA,96,intellectual property,7,7.29
 DIGITAL-MEDIA,96,php,7,7.29
 DIGITAL-MEDIA,96,sap,6,6.25
@@ -1501,8 +1501,8 @@ DIGITAL-MEDIA,96,textiles,2,2.08
 DIGITAL-MEDIA,96,devops,2,2.08
 DIGITAL-MEDIA,96,risk management,2,2.08
 DIGITAL-MEDIA,96,painting,2,2.08
-DIGITAL-MEDIA,96,cpa,2,2.08
 DIGITAL-MEDIA,96,performance management,2,2.08
+DIGITAL-MEDIA,96,cpa,2,2.08
 DIGITAL-MEDIA,96,call center,2,2.08
 DIGITAL-MEDIA,96,curriculum development,2,2.08
 DIGITAL-MEDIA,96,pharmacology,2,2.08
@@ -1515,8 +1515,8 @@ DIGITAL-MEDIA,96,safety management,1,1.04
 DIGITAL-MEDIA,96,reconciliation,1,1.04
 DIGITAL-MEDIA,96,talent acquisition,1,1.04
 DIGITAL-MEDIA,96,mediation,1,1.04
-DIGITAL-MEDIA,96,machine learning,1,1.04
 DIGITAL-MEDIA,96,angular,1,1.04
+DIGITAL-MEDIA,96,machine learning,1,1.04
 DIGITAL-MEDIA,96,nutrition planning,1,1.04
 DIGITAL-MEDIA,96,culinary arts,1,1.04
 DIGITAL-MEDIA,96,curating,1,1.04
@@ -1542,8 +1542,8 @@ ENGINEERING,118,sql,19,16.1
 ENGINEERING,118,networks,19,16.1
 ENGINEERING,118,sketching,18,15.25
 ENGINEERING,118,agile,16,13.56
-ENGINEERING,118,marketing,16,13.56
 ENGINEERING,118,engine tuning,16,13.56
+ENGINEERING,118,marketing,16,13.56
 ENGINEERING,118,matlab,16,13.56
 ENGINEERING,118,solidworks,15,12.71
 ENGINEERING,118,java,15,12.71
@@ -1556,8 +1556,8 @@ ENGINEERING,118,recruitment,12,10.17
 ENGINEERING,118,intellectual property,12,10.17
 ENGINEERING,118,contract drafting,12,10.17
 ENGINEERING,118,mechanical design,11,9.32
-ENGINEERING,118,python,11,9.32
 ENGINEERING,118,banking,11,9.32
+ENGINEERING,118,python,11,9.32
 ENGINEERING,118,sap,11,9.32
 ENGINEERING,118,public speaking,10,8.47
 ENGINEERING,118,diagnosis,10,8.47
@@ -1574,16 +1574,16 @@ ENGINEERING,118,css,6,5.08
 ENGINEERING,118,piloting,6,5.08
 ENGINEERING,118,strength training,6,5.08
 ENGINEERING,118,risk management,6,5.08
-ENGINEERING,118,php,5,4.24
 ENGINEERING,118,video editing,5,4.24
+ENGINEERING,118,php,5,4.24
 ENGINEERING,118,carpentry,5,4.24
 ENGINEERING,118,painting,5,4.24
 ENGINEERING,118,vehicle diagnostics,5,4.24
-ENGINEERING,118,git,4,3.39
 ENGINEERING,118,reconciliation,4,3.39
 ENGINEERING,118,tutoring,4,3.39
-ENGINEERING,118,clinical,4,3.39
+ENGINEERING,118,git,4,3.39
 ENGINEERING,118,financial analysis,4,3.39
+ENGINEERING,118,clinical,4,3.39
 ENGINEERING,118,change management,4,3.39
 ENGINEERING,118,photography,4,3.39
 ENGINEERING,118,first aid,4,3.39
@@ -1598,9 +1598,9 @@ ENGINEERING,118,sem,3,2.54
 ENGINEERING,118,kitchen management,3,2.54
 ENGINEERING,118,brake systems,3,2.54
 ENGINEERING,118,auto repair,2,1.69
+ENGINEERING,118,lesson planning,2,1.69
 ENGINEERING,118,nosql,2,1.69
 ENGINEERING,118,aws,2,1.69
-ENGINEERING,118,lesson planning,2,1.69
 ENGINEERING,118,curriculum development,2,1.69
 ENGINEERING,118,performance management,2,1.69
 ENGINEERING,118,crm,2,1.69
@@ -1609,16 +1609,16 @@ ENGINEERING,118,soil science,2,1.69
 ENGINEERING,118,call center,2,1.69
 ENGINEERING,118,quickbooks,2,1.69
 ENGINEERING,118,deep learning,2,1.69
-ENGINEERING,118,employee relations,2,1.69
 ENGINEERING,118,cpr,2,1.69
+ENGINEERING,118,employee relations,2,1.69
 ENGINEERING,118,hr policies,2,1.69
 ENGINEERING,118,sculpting,1,0.85
 ENGINEERING,118,litigation,1,0.85
 ENGINEERING,118,food safety,1,0.85
 ENGINEERING,118,react,1,0.85
-ENGINEERING,118,kyc,1,0.85
 ENGINEERING,118,portfolio management,1,0.85
 ENGINEERING,118,advocacy,1,0.85
+ENGINEERING,118,kyc,1,0.85
 ENGINEERING,118,pharmacology,1,0.85
 ENGINEERING,118,nutrition planning,1,0.85
 ENGINEERING,118,negotiation,1,0.85
@@ -1634,8 +1634,8 @@ ENGINEERING,118,conflict resolution,1,0.85
 ENGINEERING,118,cpa,1,0.85
 ENGINEERING,118,talent acquisition,1,0.85
 ENGINEERING,118,market research,1,0.85
-ENGINEERING,118,mediation,1,0.85
 ENGINEERING,118,interviewing,1,0.85
+ENGINEERING,118,mediation,1,0.85
 ENGINEERING,118,azure,1,0.85
 ENGINEERING,118,photoshop,1,0.85
 ENGINEERING,118,illustrator,1,0.85
@@ -1703,8 +1703,8 @@ FINANCE,117,agile,2,1.71
 FINANCE,117,stakeholder management,2,1.71
 FINANCE,117,piloting,2,1.71
 FINANCE,117,media relations,2,1.71
-FINANCE,117,pharmacology,2,1.71
 FINANCE,117,nutrition planning,2,1.71
+FINANCE,117,pharmacology,2,1.71
 FINANCE,117,java,1,0.85
 FINANCE,117,yoga,1,0.85
 FINANCE,117,electrical circuits,1,0.85
@@ -1716,9 +1716,9 @@ FINANCE,117,aerodynamics,1,0.85
 FINANCE,117,tutoring,1,0.85
 FINANCE,117,patient care,1,0.85
 FINANCE,117,food preparation,1,0.85
-FINANCE,117,legal research,1,0.85
 FINANCE,117,strength training,1,0.85
 FINANCE,117,safety management,1,0.85
+FINANCE,117,legal research,1,0.85
 FINANCE,117,legal counsel,1,0.85
 FINANCE,117,php,1,0.85
 FINANCE,117,surgery,1,0.85
@@ -1792,14 +1792,14 @@ FITNESS,117,mediation,4,3.42
 FITNESS,117,advocacy,3,2.56
 FITNESS,117,brand management,3,2.56
 FITNESS,117,technical support,3,2.56
-FITNESS,117,photography,3,2.56
 FITNESS,117,agile,3,2.56
+FITNESS,117,photography,3,2.56
 FITNESS,117,market research,3,2.56
 FITNESS,117,vehicle diagnostics,2,1.71
 FITNESS,117,electrical circuits,2,1.71
-FITNESS,117,kitchen management,2,1.71
-FITNESS,117,intellectual property,2,1.71
 FITNESS,117,piloting,2,1.71
+FITNESS,117,intellectual property,2,1.71
+FITNESS,117,kitchen management,2,1.71
 FITNESS,117,lesson planning,2,1.71
 FITNESS,117,tutoring,2,1.71
 FITNESS,117,employee relations,2,1.71
@@ -1848,8 +1848,8 @@ HEALTHCARE,115,networks,20,17.39
 HEALTHCARE,115,cpr,19,16.52
 HEALTHCARE,115,data entry,18,15.65
 HEALTHCARE,115,surgery,17,14.78
-HEALTHCARE,115,interviewing,16,13.91
 HEALTHCARE,115,diagnosis,16,13.91
+HEALTHCARE,115,interviewing,16,13.91
 HEALTHCARE,115,public speaking,15,13.04
 HEALTHCARE,115,contract drafting,15,13.04
 HEALTHCARE,115,mentoring,15,13.04
@@ -1872,8 +1872,8 @@ HEALTHCARE,115,conflict resolution,7,6.09
 HEALTHCARE,115,photoshop,7,6.09
 HEALTHCARE,115,event planning,6,5.22
 HEALTHCARE,115,litigation,6,5.22
-HEALTHCARE,115,technical support,6,5.22
 HEALTHCARE,115,quickbooks,6,5.22
+HEALTHCARE,115,technical support,6,5.22
 HEALTHCARE,115,sql,6,5.22
 HEALTHCARE,115,change management,6,5.22
 HEALTHCARE,115,curriculum development,5,4.35
@@ -1881,22 +1881,22 @@ HEALTHCARE,115,safety management,5,4.35
 HEALTHCARE,115,onboarding,5,4.35
 HEALTHCARE,115,taxation,4,3.48
 HEALTHCARE,115,menu planning,4,3.48
-HEALTHCARE,115,intellectual property,4,3.48
 HEALTHCARE,115,vehicle diagnostics,4,3.48
+HEALTHCARE,115,intellectual property,4,3.48
 HEALTHCARE,115,java,4,3.48
 HEALTHCARE,115,html,4,3.48
 HEALTHCARE,115,client acquisition,4,3.48
 HEALTHCARE,115,merchandising,3,2.61
 HEALTHCARE,115,advocacy,3,2.61
-HEALTHCARE,115,legal counsel,3,2.61
 HEALTHCARE,115,ledger,3,2.61
+HEALTHCARE,115,legal counsel,3,2.61
 HEALTHCARE,115,talent acquisition,3,2.61
 HEALTHCARE,115,tutoring,3,2.61
 HEALTHCARE,115,kitchen management,3,2.61
 HEALTHCARE,115,brand management,2,1.74
+HEALTHCARE,115,food preparation,2,1.74
 HEALTHCARE,115,employee relations,2,1.74
 HEALTHCARE,115,lead generation,2,1.74
-HEALTHCARE,115,food preparation,2,1.74
 HEALTHCARE,115,javascript,2,1.74
 HEALTHCARE,115,agile,2,1.74
 HEALTHCARE,115,painting,2,1.74
@@ -1904,8 +1904,8 @@ HEALTHCARE,115,special education,2,1.74
 HEALTHCARE,115,linux,2,1.74
 HEALTHCARE,115,illustrator,2,1.74
 HEALTHCARE,115,css,2,1.74
-HEALTHCARE,115,business analysis,2,1.74
 HEALTHCARE,115,piloting,2,1.74
+HEALTHCARE,115,business analysis,2,1.74
 HEALTHCARE,115,carpentry,2,1.74
 HEALTHCARE,115,lesson planning,2,1.74
 HEALTHCARE,115,ui/ux,2,1.74
@@ -1914,8 +1914,8 @@ HEALTHCARE,115,sap,2,1.74
 HEALTHCARE,115,seo,2,1.74
 HEALTHCARE,115,sem,2,1.74
 HEALTHCARE,115,kinesiology,1,0.87
-HEALTHCARE,115,market research,1,0.87
 HEALTHCARE,115,blueprint reading,1,0.87
+HEALTHCARE,115,market research,1,0.87
 HEALTHCARE,115,machine learning,1,0.87
 HEALTHCARE,115,curating,1,0.87
 HEALTHCARE,115,yoga,1,0.87
@@ -1929,8 +1929,8 @@ HEALTHCARE,115,graphic design,1,0.87
 HEALTHCARE,115,performance management,1,0.87
 HEALTHCARE,115,classroom management,1,0.87
 HEALTHCARE,115,portfolio management,1,0.87
-HEALTHCARE,115,mediation,1,0.87
 HEALTHCARE,115,food safety,1,0.87
+HEALTHCARE,115,mediation,1,0.87
 HEALTHCARE,115,cyber security,1,0.87
 HEALTHCARE,115,3d modeling,1,0.87
 HEALTHCARE,115,grading,1,0.87
@@ -1968,8 +1968,8 @@ HR,110,billing,18,16.36
 HR,110,networks,17,15.45
 HR,110,mediation,17,15.45
 HR,110,advertising,16,14.55
-HR,110,talent acquisition,16,14.55
 HR,110,negotiation,16,14.55
+HR,110,talent acquisition,16,14.55
 HR,110,reconciliation,15,13.64
 HR,110,taxation,14,12.73
 HR,110,mentoring,13,11.82
@@ -2060,8 +2060,8 @@ INFORMATION-TECHNOLOGY,120,mentoring,14,11.67
 INFORMATION-TECHNOLOGY,120,change management,14,11.67
 INFORMATION-TECHNOLOGY,120,java,13,10.83
 INFORMATION-TECHNOLOGY,120,risk management,13,10.83
-INFORMATION-TECHNOLOGY,120,php,12,10.0
 INFORMATION-TECHNOLOGY,120,css,12,10.0
+INFORMATION-TECHNOLOGY,120,php,12,10.0
 INFORMATION-TECHNOLOGY,120,electrical circuits,12,10.0
 INFORMATION-TECHNOLOGY,120,agile,11,9.17
 INFORMATION-TECHNOLOGY,120,ui/ux,11,9.17
@@ -2077,17 +2077,17 @@ INFORMATION-TECHNOLOGY,120,public speaking,8,6.67
 INFORMATION-TECHNOLOGY,120,python,7,5.83
 INFORMATION-TECHNOLOGY,120,banking,6,5.0
 INFORMATION-TECHNOLOGY,120,business analysis,6,5.0
-INFORMATION-TECHNOLOGY,120,call center,6,5.0
 INFORMATION-TECHNOLOGY,120,medical records,6,5.0
+INFORMATION-TECHNOLOGY,120,call center,6,5.0
 INFORMATION-TECHNOLOGY,120,illustrator,6,5.0
 INFORMATION-TECHNOLOGY,120,aws,6,5.0
 INFORMATION-TECHNOLOGY,120,data entry,6,5.0
+INFORMATION-TECHNOLOGY,120,azure,5,4.17
 INFORMATION-TECHNOLOGY,120,social media,5,4.17
 INFORMATION-TECHNOLOGY,120,engine tuning,5,4.17
-INFORMATION-TECHNOLOGY,120,azure,5,4.17
 INFORMATION-TECHNOLOGY,120,taxation,5,4.17
-INFORMATION-TECHNOLOGY,120,clinical,5,4.17
 INFORMATION-TECHNOLOGY,120,advertising,5,4.17
+INFORMATION-TECHNOLOGY,120,clinical,5,4.17
 INFORMATION-TECHNOLOGY,120,payroll,5,4.17
 INFORMATION-TECHNOLOGY,120,curriculum development,4,3.33
 INFORMATION-TECHNOLOGY,120,git,4,3.33
@@ -2103,9 +2103,9 @@ INFORMATION-TECHNOLOGY,120,patient care,3,2.5
 INFORMATION-TECHNOLOGY,120,pharmacology,3,2.5
 INFORMATION-TECHNOLOGY,120,farming,3,2.5
 INFORMATION-TECHNOLOGY,120,typescript,3,2.5
-INFORMATION-TECHNOLOGY,120,solidworks,2,1.67
 INFORMATION-TECHNOLOGY,120,seo,2,1.67
 INFORMATION-TECHNOLOGY,120,graphic design,2,1.67
+INFORMATION-TECHNOLOGY,120,solidworks,2,1.67
 INFORMATION-TECHNOLOGY,120,artificial intelligence,2,1.67
 INFORMATION-TECHNOLOGY,120,employee relations,2,1.67
 INFORMATION-TECHNOLOGY,120,sketching,2,1.67
@@ -2161,25 +2161,25 @@ PUBLIC-RELATIONS,111,compliance,15,13.51
 PUBLIC-RELATIONS,111,content creation,15,13.51
 PUBLIC-RELATIONS,111,market research,15,13.51
 PUBLIC-RELATIONS,111,contract drafting,15,13.51
-PUBLIC-RELATIONS,111,accounting,14,12.61
 PUBLIC-RELATIONS,111,hr policies,14,12.61
 PUBLIC-RELATIONS,111,indesign,14,12.61
+PUBLIC-RELATIONS,111,accounting,14,12.61
 PUBLIC-RELATIONS,111,illustrator,13,11.71
 PUBLIC-RELATIONS,111,negotiation,13,11.71
 PUBLIC-RELATIONS,111,interviewing,13,11.71
 PUBLIC-RELATIONS,111,mentoring,13,11.71
 PUBLIC-RELATIONS,111,banking,12,10.81
-PUBLIC-RELATIONS,111,crm,10,9.01
 PUBLIC-RELATIONS,111,auditing,10,9.01
+PUBLIC-RELATIONS,111,crm,10,9.01
 PUBLIC-RELATIONS,111,seo,10,9.01
 PUBLIC-RELATIONS,111,taxation,8,7.21
 PUBLIC-RELATIONS,111,merchandising,8,7.21
-PUBLIC-RELATIONS,111,forecasting,7,6.31
 PUBLIC-RELATIONS,111,crisis communication,7,6.31
 PUBLIC-RELATIONS,111,client acquisition,7,6.31
+PUBLIC-RELATIONS,111,forecasting,7,6.31
 PUBLIC-RELATIONS,111,clinical,7,6.31
-PUBLIC-RELATIONS,111,nursing,6,5.41
 PUBLIC-RELATIONS,111,conflict resolution,6,5.41
+PUBLIC-RELATIONS,111,nursing,6,5.41
 PUBLIC-RELATIONS,111,kitchen management,5,4.5
 PUBLIC-RELATIONS,111,curriculum development,5,4.5
 PUBLIC-RELATIONS,111,menu planning,5,4.5
@@ -2189,10 +2189,10 @@ PUBLIC-RELATIONS,111,employee relations,3,2.7
 PUBLIC-RELATIONS,111,html,3,2.7
 PUBLIC-RELATIONS,111,quickbooks,3,2.7
 PUBLIC-RELATIONS,111,yoga,3,2.7
-PUBLIC-RELATIONS,111,medical records,3,2.7
 PUBLIC-RELATIONS,111,tutoring,3,2.7
-PUBLIC-RELATIONS,111,data entry,3,2.7
+PUBLIC-RELATIONS,111,medical records,3,2.7
 PUBLIC-RELATIONS,111,culinary arts,3,2.7
+PUBLIC-RELATIONS,111,data entry,3,2.7
 PUBLIC-RELATIONS,111,creative direction,3,2.7
 PUBLIC-RELATIONS,111,video editing,3,2.7
 PUBLIC-RELATIONS,111,curating,3,2.7
@@ -2202,8 +2202,8 @@ PUBLIC-RELATIONS,111,sem,2,1.8
 PUBLIC-RELATIONS,111,nutrition planning,2,1.8
 PUBLIC-RELATIONS,111,sql,2,1.8
 PUBLIC-RELATIONS,111,performance management,2,1.8
-PUBLIC-RELATIONS,111,ui/ux,2,1.8
 PUBLIC-RELATIONS,111,food preparation,2,1.8
+PUBLIC-RELATIONS,111,ui/ux,2,1.8
 PUBLIC-RELATIONS,111,ledger,2,1.8
 PUBLIC-RELATIONS,111,agile,2,1.8
 PUBLIC-RELATIONS,111,farming,2,1.8
@@ -2233,11 +2233,11 @@ PUBLIC-RELATIONS,111,surgery,1,0.9
 PUBLIC-RELATIONS,111,blueprint reading,1,0.9
 PUBLIC-RELATIONS,111,css,1,0.9
 PUBLIC-RELATIONS,111,typescript,1,0.9
-PUBLIC-RELATIONS,111,gcp,1,0.9
 PUBLIC-RELATIONS,111,lead generation,1,0.9
+PUBLIC-RELATIONS,111,gcp,1,0.9
 PUBLIC-RELATIONS,111,electrical circuits,1,0.9
-PUBLIC-RELATIONS,111,sap,1,0.9
 PUBLIC-RELATIONS,111,legal counsel,1,0.9
+PUBLIC-RELATIONS,111,sap,1,0.9
 SALES,116,sales,116,100.0
 SALES,116,customer support,88,75.86
 SALES,116,training,85,73.28
@@ -2293,8 +2293,8 @@ SALES,116,patient care,4,3.45
 SALES,116,electrical circuits,3,2.59
 SALES,116,event planning,3,2.59
 SALES,116,first aid,3,2.59
-SALES,116,performance management,3,2.59
 SALES,116,change management,3,2.59
+SALES,116,performance management,3,2.59
 SALES,116,pharmacology,3,2.59
 SALES,116,diagnosis,3,2.59
 SALES,116,food safety,3,2.59
@@ -2323,14 +2323,14 @@ SALES,116,javascript,1,0.86
 SALES,116,css,1,0.86
 SALES,116,crisis communication,1,0.86
 SALES,116,linux,1,0.86
+SALES,116,textiles,1,0.86
 SALES,116,process optimization,1,0.86
 SALES,116,seo,1,0.86
 SALES,116,indesign,1,0.86
 SALES,116,engine tuning,1,0.86
-SALES,116,textiles,1,0.86
+SALES,116,ledger,1,0.86
 SALES,116,sketching,1,0.86
 SALES,116,strength training,1,0.86
-SALES,116,ledger,1,0.86
 SALES,116,grading,1,0.86
 SALES,116,special education,1,0.86
 SALES,116,litigation,1,0.86
@@ -2381,14 +2381,14 @@ TEACHER,102,litigation,4,3.92
 TEACHER,102,strategy,3,2.94
 TEACHER,102,client acquisition,3,2.94
 TEACHER,102,advocacy,3,2.94
-TEACHER,102,taxation,3,2.94
 TEACHER,102,auditing,3,2.94
+TEACHER,102,taxation,3,2.94
 TEACHER,102,medical records,3,2.94
 TEACHER,102,sap,3,2.94
 TEACHER,102,financial analysis,2,1.96
 TEACHER,102,networks,2,1.96
-TEACHER,102,patient care,2,1.96
 TEACHER,102,culinary arts,2,1.96
+TEACHER,102,patient care,2,1.96
 TEACHER,102,strength training,2,1.96
 TEACHER,102,reconciliation,2,1.96
 TEACHER,102,safety management,2,1.96
@@ -2401,8 +2401,8 @@ TEACHER,102,brand management,1,0.98
 TEACHER,102,negotiation,1,0.98
 TEACHER,102,portfolio management,1,0.98
 TEACHER,102,technical support,1,0.98
-TEACHER,102,menu planning,1,0.98
 TEACHER,102,photography,1,0.98
+TEACHER,102,menu planning,1,0.98
 TEACHER,102,illustrator,1,0.98
 TEACHER,102,call center,1,0.98
 TEACHER,102,crm,1,0.98
@@ -2417,7 +2417,7 @@ TEACHER,102,market research,1,0.98
 TEACHER,102,seo,1,0.98
 TEACHER,102,yoga,1,0.98
 TEACHER,102,pedagogy,1,0.98
-TEACHER,102,content creation,1,0.98
 TEACHER,102,auto repair,1,0.98
+TEACHER,102,content creation,1,0.98
 TEACHER,102,graphic design,1,0.98
 TEACHER,102,onboarding,1,0.98

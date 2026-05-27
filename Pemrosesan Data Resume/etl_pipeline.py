@@ -368,7 +368,11 @@ class ResumeETLPipeline:
         if self.dataset_path_csv and os.path.exists(self.dataset_path_csv):
             logging.info(f"Extracting CSV data from {self.dataset_path_csv}")
             try:
-                self.raw_data_csv = pd.read_csv(self.dataset_path_csv)
+                import zipfile
+                if zipfile.is_zipfile(self.dataset_path_csv):
+                    self.raw_data_csv = pd.read_csv(self.dataset_path_csv, compression='zip')
+                else:
+                    self.raw_data_csv = pd.read_csv(self.dataset_path_csv, encoding='utf-8', encoding_errors='replace')
                 self.assessment_report['csv_total_rows'] = len(self.raw_data_csv)
                 logging.info(f"Successfully extracted {len(self.raw_data_csv)} rows from CSV.")
             except Exception as e:
@@ -414,7 +418,7 @@ class ResumeETLPipeline:
         """
         Extracts key skills matching our dictionary from cleaned text using regex word boundaries.
         """
-        if not text:
+        if not isinstance(text, str) or not text:
             return ""
         
         matched_skills = []
@@ -548,38 +552,72 @@ class ResumeETLPipeline:
             
         return self.processed_df_pdf
 
-    def load(self, output_csv_path, output_csv_path_csv=None):
+    def load(self, output_csv_path):
         """
-        Loads the structured DataFrame into a consolidated CSV file.
+        Loads the structured DataFrame into a consolidated CSV file by merging PDF and CSV data.
         Loading Stage of ETL.
         """
-        logging.info(f"Starting Load phase...")
+        logging.info(f"Starting Load and Merge phase...")
+        
+        merged_df = None
+        dfs_to_merge = []
         
         try:
             if self.processed_df_pdf is not None:
+                # Include raw_text and cleaned_text for PDFs
+                df_pdf_aligned = self.processed_df_pdf[['resume_id', 'category', 'extracted_skills', 'word_count', 'raw_text', 'cleaned_text']].copy()
+                df_pdf_aligned['Age'] = None
+                df_pdf_aligned['EdLevel'] = None
+                df_pdf_aligned['Country'] = None
+                df_pdf_aligned['YearsCode'] = None
+                dfs_to_merge.append(df_pdf_aligned)
+                
+            if self.processed_df_csv is not None:
+                df_so = self.processed_df_csv
+                
+                # Downsample StackOverflow data to avoid extreme class imbalance
+                # (matching the average ~100-150 resumes per PDF category)
+                if len(df_so) > 150:
+                    df_so = df_so.sample(n=150, random_state=42)
+                    
+                df_so_aligned = pd.DataFrame()
+                df_so_aligned['resume_id'] = 'SO_' + df_so['Unnamed: 0'].astype(str)
+                df_so_aligned['category'] = 'INFORMATION-TECHNOLOGY'
+                df_so_aligned['extracted_skills'] = df_so['cleaned_skills']
+                df_so_aligned['word_count'] = df_so['skill_count']
+                df_so_aligned['raw_text'] = None
+                df_so_aligned['cleaned_text'] = None
+                
+                df_so_aligned['Age'] = df_so.get('Age', None)
+                df_so_aligned['EdLevel'] = df_so.get('EdLevel', None)
+                df_so_aligned['Country'] = df_so.get('Country', None)
+                df_so_aligned['YearsCode'] = df_so.get('YearsCode', None)
+                dfs_to_merge.append(df_so_aligned)
+            
+            if dfs_to_merge:
+                merged_df = pd.concat(dfs_to_merge, ignore_index=True)
                 output_dir = os.path.dirname(output_csv_path)
                 if output_dir and not os.path.exists(output_dir):
                     os.makedirs(output_dir, exist_ok=True)
-                self.processed_df_pdf.to_csv(output_csv_path, index=False, encoding='utf-8')
-                logging.info(f"Successfully loaded PDF processed data to {output_csv_path}")
+                merged_df.to_csv(output_csv_path, index=False, encoding='utf-8')
+                logging.info(f"Successfully loaded and merged {len(merged_df)} resumes to {output_csv_path}")
+            else:
+                logging.warning("No data available to merge and load.")
                 
-            if self.processed_df_csv is not None and output_csv_path_csv is not None:
-                output_dir_csv = os.path.dirname(output_csv_path_csv)
-                if output_dir_csv and not os.path.exists(output_dir_csv):
-                    os.makedirs(output_dir_csv, exist_ok=True)
-                self.processed_df_csv.to_csv(output_csv_path_csv, index=False, encoding='utf-8')
-                logging.info(f"Successfully loaded CSV processed data to {output_csv_path_csv}")
-                
+            return merged_df
         except Exception as e:
-            logging.error(f"Failed to save output CSVs: {e}")
+            logging.error(f"Failed to merge and save output CSV: {e}")
             raise e
 
-    def aggregate_skills(self, output_csv_path):
+    def aggregate_skills(self, output_csv_path, df_to_aggregate=None):
         """
         Aggregates skill frequencies per job category and saves to a CSV.
         """
-        if self.processed_df_pdf is None:
-            logging.error("No PDF processed DataFrame to aggregate skills! Run transform() first.")
+        if df_to_aggregate is None:
+            df_to_aggregate = self.processed_df_pdf
+            
+        if df_to_aggregate is None or df_to_aggregate.empty:
+            logging.error("No DataFrame to aggregate skills!")
             return pd.DataFrame()
 
         logging.info(f"Starting Skills Aggregation phase to: {output_csv_path}")
@@ -587,7 +625,7 @@ class ResumeETLPipeline:
         aggregation_data = []
 
         # Group by category
-        grouped = self.processed_df_pdf.groupby('category')
+        grouped = df_to_aggregate.groupby('category')
         for category, group in grouped:
             total_resumes = len(group)
             
@@ -634,20 +672,22 @@ class ResumeETLPipeline:
             logging.warning("No skills aggregated. File not saved.")
             return pd.DataFrame()
 
-    def run_pipeline(self, output_csv_path, output_csv_path_csv=None):
+    def run_pipeline(self, output_csv_path):
         """Orchestrates the entire ETL & Assessment flow."""
         self.extract()
         self.assess()
         self.transform()
-        self.load(output_csv_path, output_csv_path_csv)
+        # Merge is handled inside load() now
+        merged_df = self.load(output_csv_path)
         
-        if self.processed_df_pdf is not None:
-            # Generate skill aggregation file in the same directory as the main CSV
-            base_dir = os.path.dirname(output_csv_path)
-            agg_csv_path = os.path.join(base_dir, "skills_by_category.csv")
-            self.aggregate_skills(agg_csv_path)
+        # Skill aggregation should be run on the merged dataset, or just PDF? 
+        # Merged dataset is better! Wait, self.processed_df_pdf is used in aggregate_skills.
+        # I should change aggregate_skills to use the merged_df.
+        base_dir = os.path.dirname(output_csv_path)
+        agg_csv_path = os.path.join(base_dir, "skills_by_category.csv")
+        self.aggregate_skills(agg_csv_path, merged_df)
         
-        return self.processed_df_pdf, self.processed_df_csv, self.assessment_report
+        return merged_df, self.assessment_report
 
 if __name__ == "__main__":
     # Define paths
@@ -661,10 +701,9 @@ if __name__ == "__main__":
     if not os.path.exists(dataset_dir_csv):
         dataset_dir_csv = os.path.join(base_dir, "stackoverflow_full.csv") # Fallback
     
-    output_pdf_csv = os.path.join(base_dir, "all_resumes.csv")
-    output_csv_csv = os.path.join(base_dir, "all_stackoverflow_resumes.csv")
+    output_merged_csv = os.path.join(base_dir, "merged_all_resumes.csv")
     
     logging.info("Executing Resume ETL Pipeline from CLI...")
     pipeline = ResumeETLPipeline(dataset_dir_pdf, dataset_dir_csv)
-    pipeline.run_pipeline(output_pdf_csv, output_csv_csv)
+    pipeline.run_pipeline(output_merged_csv)
     logging.info("ETL Pipeline Execution Finished Successfully!")
