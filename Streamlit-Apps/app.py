@@ -198,8 +198,8 @@ def load_candidate_data():
     
     df_cand = pd.read_csv(csv_path)
     df_cand["extracted_skills"] = df_cand["extracted_skills"].fillna("")
-    df_cand["word_count"] = df_cand["cleaned_text"].astype(str).apply(lambda x: len(x.split()))
-    df_cand["skills_list"] = df_cand["extracted_skills"].apply(lambda x: [s.strip() for s in x.split(",") if s.strip()])
+    df_cand["word_count"] = df_cand["cleaned_text"].fillna("").astype(str).apply(lambda x: len(str(x).split()))
+    df_cand["skills_list"] = df_cand["extracted_skills"].apply(lambda x: [s.strip() for s in str(x).split(",") if s.strip()])
     df_cand["skill_count"] = df_cand["skills_list"].apply(len)
     return df_cand
 
