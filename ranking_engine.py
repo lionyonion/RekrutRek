@@ -1,4 +1,5 @@
 import pandas as pd
+import random
 
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -17,30 +18,29 @@ def rank_candidates(
     required_skills,
     offered_salary=10
 ):
-    """
-    Ranking kandidat menggunakan:
-    - Sentence Transformer
-    - Cosine Similarity
-
-    offered_salary sementara belum dipakai,
-    hanya disiapkan untuk tahap salary matching.
-    """
 
     filtered_df = df[
         df["category"] == category
     ].copy()
 
-    # Gabungkan skill lowongan menjadi teks
+    # Dummy salary expectation
+    random.seed(42)
+
+    filtered_df["salary_expectation"] = [
+        random.randint(5, 15)
+        for _ in range(len(filtered_df))
+    ]
+
+    # Job text
     job_text = " ".join(
         required_skills
     )
 
-    # Embedding lowongan
     job_embedding = model.encode(
         job_text
     )
 
-    scores = []
+    final_scores = []
 
     for _, row in filtered_df.iterrows():
 
@@ -57,14 +57,37 @@ def rank_candidates(
             [candidate_embedding]
         )[0][0]
 
-        scores.append(
+        skill_score = float(
+            similarity * 100
+        )
+
+        # Salary score
+        salary_expectation = row[
+            "salary_expectation"
+        ]
+
+        salary_score = max(
+            0,
+            100 - (
+                (salary_expectation - 5)
+                * 10
+            )
+        )
+
+        final_score = (
+            0.8 * skill_score
+            +
+            0.2 * salary_score
+        )
+
+        final_scores.append(
             round(
-                float(similarity * 100),
+                final_score,
                 2
             )
         )
 
-    filtered_df["score"] = scores
+    filtered_df["score"] = final_scores
 
     ranked = filtered_df.sort_values(
         by="score",
@@ -73,6 +96,7 @@ def rank_candidates(
 
     result = ranked[
         [
+            "salary_expectation",
             "resume_id",
             "score",
             "extracted_skills"
