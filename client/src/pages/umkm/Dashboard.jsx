@@ -1,3 +1,4 @@
+import MapPicker from '../../components/MapPicker';
 export default function Dashboard() {
   return (
     <div>
@@ -8,6 +9,9 @@ export default function Dashboard() {
       <div className="card text-center py-12">
         <p className="text-3xl mb-3">🚧</p>
         <p className="text-neutral-600 font-medium">Coming soon</p>
+      </div>
+      <div className="p-6 bg-white rounded-lg shadow-md border border-neutral-200 mt-6 max-w-2xl">
+        <MapPicker onLocationSelect={(lat, lng) => console.log("Koordinat terpilih:", lat, lng)} />
       </div>
     </div>
   )
