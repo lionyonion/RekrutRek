@@ -26,9 +26,10 @@ def home():
 def rank_candidates_api(job: JobRequest):
 
     result = rank_candidates(
-        job.category,
-        job.required_skills
-    )
+    job.category,
+    job.required_skills,
+    job.offered_salary
+)
 
     return result.to_dict(
         orient="records"
