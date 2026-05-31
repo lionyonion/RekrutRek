@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Rekrutrek — Platform Rekrutmen UMKM & Korporat
 **Capstone Project CC26-PSU370 | Coding Camp 2026 × DBS Foundation**
 
@@ -55,3 +56,7 @@ npm run dev            # → http://localhost:5173
 | Full-Stack | Liony Dewinta Anggraeni, Naila Atha Syahira |
 | AI Engineer | Muhammad Arif Rachmat, Athaya Khalishah |
 | Data Scientist | Muhammad Rezki L, Steven Wijaya Lim |
+=======
+# RekrutRek
+Project Capstone
+>>>>>>> c4eeb68785ab334435a9890a02578bb22de63ef1
