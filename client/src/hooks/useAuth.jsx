@@ -29,13 +29,25 @@ export function AuthProvider({ children }) {
     return data.user
   }
 
-  const register = async (email, password, user_type) => {
-    const { data } = await authService.register({ email, password, user_type })
+  // 👇 INI BAGIAN YANG DIUBAH 👇
+  const register = async (email, password, user_type, extraData = {}) => {
+    // Gabungkan semua data menjadi satu object payload
+    const payload = {
+      email,
+      password,
+      user_type,
+      ...extraData // Memasukkan pic_name, company_name, whatsapp otomatis ke sini
+    }
+
+    // Kirim payload lengkap ke API
+    const { data } = await authService.register(payload)
+    
     localStorage.setItem('rekrutrek_token', data.token)
     localStorage.setItem('rekrutrek_user',  JSON.stringify(data.user))
     setUser(data.user)
     return data.user
   }
+  // 👆 SAMPAI SINI 👆
 
   const logout = () => {
     localStorage.removeItem('rekrutrek_token')

@@ -6,7 +6,7 @@
 | Layer | Teknologi |
 |-------|-----------|
 | Frontend | React 18 + Vite + Tailwind CSS |
-| Backend | Express.js + PostgreSQL (via `pg`) |
+| Backend | Express.js + Supabase |
 | AI Service | FastAPI (tim AI Engineer) |
 | Peta | Leaflet + OpenStreetMap |
 | Deployment | Vercel (client) + Render (server) + Supabase (DB) |

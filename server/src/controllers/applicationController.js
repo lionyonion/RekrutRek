@@ -1,6 +1,7 @@
 const { query }    = require('../config/db')
 const aiService    = require('../services/aiService')
 const haversineKm  = require('../utils/haversine')
+const getRealDistanceKm = require('../utils/pathfinder') // TAMBAHKAN BARIS INI
 
 // ── POST /api/applications ────────────────────────────────
 exports.apply = async (req, res, next) => {
@@ -20,12 +21,10 @@ exports.apply = async (req, res, next) => {
     const job     = jobRes.rows[0]
     const profile = profileRes.rows[0]
 
-    // Hitung jarak tempat tinggal
+   // Hitung jarak tempat tinggal (menggunakan rute jalan raya OSRM)
     let distance_km = null
     if (profile?.latitude && job.latitude) {
-      distance_km = Math.round(
-        haversineKm(profile.latitude, profile.longitude, job.latitude, job.longitude) * 10
-      ) / 10
+      distance_km = await getRealDistanceKm(profile.latitude, profile.longitude, job.latitude, job.longitude)
     }
 
     // Panggil AI service untuk skor kecocokan

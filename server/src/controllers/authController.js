@@ -1,18 +1,14 @@
-const bcrypt = require('bcryptjs')
-const jwt    = require('jsonwebtoken')
 const { query } = require('../config/db')
+const { createClient } = require('@supabase/supabase-js')
 
-const signToken = (user) =>
-  jwt.sign(
-    { id: user.id, user_type: user.user_type, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-  )
+// Inisialisasi klien Supabase menggunakan variabel dari .env
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
 
 // ── POST /api/auth/register ───────────────────────────────
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, user_type } = req.body
+    // Menangkap data dari form dinamis React yang baru kita buat
+    const { email, password, user_type, pic_name, company_name, whatsapp } = req.body
 
     // Validasi dasar
     if (!email || !password || !user_type)
@@ -22,20 +18,44 @@ exports.register = async (req, res, next) => {
     if (!validTypes.includes(user_type))
       return res.status(400).json({ error: `user_type harus salah satu dari: ${validTypes.join(', ')}` })
 
-    const hash = await bcrypt.hash(password, 10)
+    // LANGKAH 1: Daftarkan ke Supabase Auth (Agar masuk ke dashboard gembok)
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: email.toLowerCase().trim(),
+      password: password,
+    })
 
+    if (authError) {
+      // Menangani error jika email sudah terdaftar di Supabase Auth
+      if (authError.message.includes('already registered')) {
+        return res.status(409).json({ error: 'Email sudah terdaftar' })
+      }
+      return res.status(400).json({ error: authError.message })
+    }
+
+    const userId = authData.user.id
+
+    // LANGKAH 2: Simpan detail peran & data perusahaan ke tabel public.users
     const { rows } = await query(
-      `INSERT INTO users (email, password, user_type)
-       VALUES ($1, $2, $3)
-       RETURNING id, email, user_type, created_at`,
-      [email.toLowerCase().trim(), hash, user_type]
+      `INSERT INTO users (id, email, user_type, pic_name, company_name, whatsapp)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, email, user_type, pic_name, company_name, created_at`,
+      [
+        userId, 
+        email.toLowerCase().trim(), 
+        user_type, 
+        pic_name || null, 
+        company_name || null, 
+        whatsapp || null
+      ]
     )
 
-    const token = signToken(rows[0])
-    res.status(201).json({ user: rows[0], token })
+    // Kembalikan response sukses berserta token asli dari Supabase
+    res.status(201).json({ 
+      user: rows[0], 
+      token: authData.session?.access_token || null 
+    })
+
   } catch (err) {
-    if (err.code === '23505')
-      return res.status(409).json({ error: 'Email sudah terdaftar' })
     next(err)
   }
 }
@@ -47,17 +67,31 @@ exports.login = async (req, res, next) => {
     if (!email || !password)
       return res.status(400).json({ error: 'email dan password wajib diisi' })
 
-    const { rows } = await query(
-      'SELECT * FROM users WHERE email = $1',
-      [email.toLowerCase().trim()]
-    )
+    // 1. Verifikasi kecocokan password menggunakan Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: email.toLowerCase().trim(),
+      password: password,
+    })
 
-    if (!rows.length || !(await bcrypt.compare(password, rows[0].password)))
+    if (authError)
       return res.status(401).json({ error: 'Email atau password salah' })
 
-    const { password: _pwd, ...user } = rows[0]
-    const token = signToken(user)
-    res.json({ user, token })
+    // 2. Ambil profil user dari database lokal public.users
+    const { rows } = await query(
+      'SELECT id, email, user_type, pic_name, company_name FROM users WHERE id = $1',
+      [authData.user.id]
+    )
+
+    if (!rows.length) {
+      return res.status(404).json({ error: 'Profil data tidak ditemukan di database' })
+    }
+
+    // Kirim profil dan token JWT asli buatan Supabase ke Frontend React
+    res.json({ 
+      user: rows[0], 
+      token: authData.session.access_token 
+    })
+
   } catch (err) {
     next(err)
   }
@@ -66,6 +100,7 @@ exports.login = async (req, res, next) => {
 // ── GET /api/auth/me ──────────────────────────────────────
 exports.getMe = async (req, res, next) => {
   try {
+    // Middleware kamu (req.user) sekarang harus membaca JWT milik Supabase
     const { rows } = await query(
       'SELECT id, email, user_type, created_at FROM users WHERE id = $1',
       [req.user.id]

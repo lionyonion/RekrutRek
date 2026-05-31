@@ -1,83 +1,112 @@
-import React from 'react';
-import { 
-  CheckCircle2, FileText, MapPin, 
-  Cpu, Bell, Briefcase, Store 
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+// Pastikan path MapPicker ini benar ya!
+import MapPicker from '../../components/MapPicker'; 
 
 export default function Dashboard() {
-  // Dummy data untuk simulasi
-  const jobs = [
-    { id: 1, title: "Barista & Kasir", org: "Kopi Kenangan Senja", dist: "1.2 km", salary: "2.5 - 3 Jt", score: 95 },
-    { id: 2, title: "Admin Gudang", org: "Toko Sembako Maju", dist: "3.5 km", salary: "2 - 2.5 Jt", score: 88 },
-  ];
+  // 1. STATE UNTUK LEBAR KOLOM KIRI (Default 35%)
+  const [leftWidth, setLeftWidth] = useState(35);
+  const isResizing = useRef(false);
+
+  // 2. FUNGSI UNTUK MENGATUR DRAG & DROP
+  const startResizing = () => {
+    isResizing.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none'; // Biar teks nggak ke-blok pas ditarik
+  };
+
+  const stopResizing = () => {
+    isResizing.current = false;
+    document.body.style.cursor = 'default';
+    document.body.style.userSelect = 'auto';
+  };
+
+  const resize = (e) => {
+    if (isResizing.current) {
+      // Hitung posisi mouse jadi persentase
+      const newWidth = (e.clientX / window.innerWidth) * 100;
+      // Batasi tarikan: minimal 20% layar, maksimal 70% layar
+      if (newWidth >= 20 && newWidth <= 70) {
+        setLeftWidth(newWidth);
+      }
+    }
+  };
+
+  // Pasang sensor mouse ke seluruh layar
+  useEffect(() => {
+    window.addEventListener('mousemove', resize);
+    window.addEventListener('mouseup', stopResizing);
+    return () => {
+      window.removeEventListener('mousemove', resize);
+      window.removeEventListener('mouseup', stopResizing);
+    };
+  }, []);
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8">
+    <div className="h-screen flex flex-col bg-neutral-50 overflow-hidden">
       
-      {/* 1. WELCOME SECTION */}
-      <div>
-        <h1 className="text-3xl font-black text-neutral-900">Halo, Naila! 👋</h1>
-        <p className="text-neutral-500 mt-1">Berikut adalah rekomendasi lowongan berdasarkan skill dan lokasimu.</p>
+      {/* HEADER & SEARCH BAR */}
+      <div className="p-4 bg-white border-b shadow-sm z-10">
+        <h1 className="text-xl font-bold text-blue-600 mb-3">Dashboard Pencari Kerja</h1>
+        <div className="flex gap-2">
+          <input type="text" placeholder="Posisi (cth: Kasir)" className="border p-2 rounded-lg w-full outline-none focus:border-blue-500" />
+          <input type="text" placeholder="Lokasi (cth: Jakarta Selatan)" className="border p-2 rounded-lg w-full outline-none focus:border-blue-500" />
+          <input type="number" placeholder="Ekspektasi Gaji" className="border p-2 rounded-lg w-full outline-none focus:border-blue-500" />
+        </div>
       </div>
 
-      {/* 2. PROFILE COMPLETION CARD */}
-      <div className="bg-[#595082] rounded-2xl p-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-lg shadow-purple-200">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-white/20 rounded-xl">
-            <CheckCircle2 className="w-6 h-6 text-[#F8C662]" />
-          </div>
-          <div>
-            <h3 className="font-bold text-lg">Lengkapi Profilmu</h3>
-            <p className="text-white/80 text-sm max-w-sm">Tingkatkan peluang dipanggil wawancara hingga 80% dengan mengunggah foto, CV, dan mengatur lokasi GPS kamu.</p>
+      {/* MAIN CONTENT (Custom Resizable) */}
+      <div className="flex flex-1 overflow-hidden">
+        
+        {/* Kolom Kiri: Daftar List Lowongan */}
+        <div 
+          style={{ width: `${leftWidth}%` }} 
+          className="bg-white overflow-y-auto p-4 flex-shrink-0"
+        >
+            <h2 className="font-semibold mb-4 text-lg">Daftar Lowongan UMKM</h2>
+            
+            {/* Card Pekerjaan 1 */}
+            <div className="p-4 mb-3 border rounded-xl shadow-sm hover:border-blue-500 hover:shadow-md cursor-pointer transition-all">
+              <h3 className="font-bold text-lg text-neutral-800">Penjaga Toko Roti</h3>
+              <p className="text-sm text-neutral-500">Toko Roti Kukus Jaya</p>
+              <p className="text-sm font-bold text-green-600 mt-2">Rp 2.000.000 / bln</p>
+            </div>
+
+            {/* Card Pekerjaan 2 */}
+            <div className="p-4 mb-3 border rounded-xl shadow-sm hover:border-blue-500 hover:shadow-md cursor-pointer transition-all">
+              <h3 className="font-bold text-lg text-neutral-800">Barista Kopi</h3>
+              <p className="text-sm text-neutral-500">Kopi Senja</p>
+              <p className="text-sm font-bold text-green-600 mt-2">Rp 2.500.000 / bln</p>
+            </div>
+        </div>
+
+        {/* GARIS PEMBATAS (Tarik di sini!) */}
+        <div 
+          onMouseDown={startResizing}
+          className="w-2 bg-neutral-200 hover:bg-blue-400 active:bg-blue-600 cursor-col-resize transition-colors z-10 flex flex-col justify-center items-center"
+        >
+          {/* Titik kecil pemanis biar kelihatan bisa ditarik */}
+          <div className="h-8 w-1 bg-neutral-400 rounded-full"></div>
+        </div>
+
+        {/* Kolom Kanan: Peta */}
+        <div 
+          style={{ width: `${100 - leftWidth}%` }} 
+          className="bg-neutral-100 relative flex-shrink-0"
+        >
+          <div className="absolute inset-0">
+             <MapPicker onLocationSelect={(lat, lng) => console.log("Koordinat:", lat, lng)} />
           </div>
         </div>
-        <button className="bg-[#F8C662] text-[#2C263F] px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
-          Lengkapi Sekarang
+        
+      </div>
+
+      {/* AI MATCHMAKER BUTTON */}
+      <div className="p-4 bg-white border-t z-10">
+        <button className="w-full py-4 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 font-bold text-lg transition-colors">
+          ✨ Matchmaker AI: Cari Lowongan Paling Cocok
         </button>
       </div>
 
-      {/* 3. QUICK STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Lamaran Aktif" value="5" icon={<Briefcase className="w-5 h-5 text-green-600" />} />
-        <StatCard title="Interview" value="2" icon={<FileText className="w-5 h-5 text-blue-600" />} />
-        <StatCard title="Notifikasi Baru" value="3" icon={<Bell className="w-5 h-5 text-orange-600" />} />
-      </div>
-
-      {/* 4. AI MATCH RECOMMENDATIONS */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-black flex items-center gap-2 text-neutral-900">
-            <Cpu className="w-5 h-5 text-green-700" /> Rekomendasi AI Match
-          </h2>
-          <button className="text-sm font-bold text-green-700 hover:underline">Lihat Semua</button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {jobs.map((job) => (
-            <div key={job.id} className="border border-neutral-200 rounded-2xl p-5 hover:shadow-md transition-shadow bg-white">
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 bg-neutral-100 rounded-lg flex items-center justify-center">
-                  <Store className="w-6 h-6 text-neutral-600" />
-                </div>
-                <div className="text-right">
-                  <div className="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded-full">{job.score}% Cocok</div>
-                </div>
-              </div>
-              <h4 className="font-bold text-lg text-neutral-900">{job.title}</h4>
-              <p className="text-sm text-neutral-500 mb-4">{job.org}</p>
-              
-              <div className="flex gap-2 text-xs font-medium text-neutral-600 mb-6">
-                <span className="bg-neutral-100 px-2 py-1 rounded-md flex items-center gap-1"><MapPin className="w-3 h-3"/> {job.dist}</span>
-                <span className="bg-neutral-100 px-2 py-1 rounded-md">$ {job.salary}</span>
-              </div>
-              
-              <button className="w-full bg-[#213722] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#1a2d1b] transition-colors">
-                Lamar
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

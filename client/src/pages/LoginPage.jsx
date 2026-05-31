@@ -28,11 +28,13 @@ export default function LoginPage() {
   return (
     <>
       <h1 className="text-xl font-medium text-center mb-6">Masuk ke Rekrutrek</h1>
+      
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-4">
           {error}
         </div>
       )}
+      
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
           <label className="text-sm text-neutral-600 block mb-1">Email</label>
@@ -60,6 +62,7 @@ export default function LoginPage() {
           {loading ? 'Memproses...' : 'Masuk'}
         </button>
       </form>
+      
       <p className="text-sm text-center text-neutral-500 mt-5">
         Belum punya akun?{' '}
         <Link to="/register" className="text-primary-400 hover:underline">Daftar di sini</Link>
