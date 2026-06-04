@@ -29,40 +29,40 @@ export default api
 // --- PERBAIKAN DI SINI: Tambahkan /api di setiap path ---
 
 export const authService = {
-  register: (data) => api.post('/api/auth/register', data),
-  login:    (data) => api.post('/api/auth/login', data),
-  getMe:    ()     => api.get('/api/auth/me'),
+  register: (data) => api.post('/auth/register', data),
+  login:    (data) => api.post('/auth/login', data),
+  getMe:    ()     => api.get('/auth/me'),
 }
 
 export const profileService = {
-  get:    ()     => api.get('/api/profile'),
-  update: (data) => api.put('/api/profile', data),
+  get:    ()     => api.get('/profile'),
+  update: (data) => api.put('/profile', data),
 }
 
 export const jobService = {
-  getAll:  (params) => api.get('/api/jobs', { params }),
-  getById: (id)     => api.get(`/api/jobs/${id}`),
-  getMy:   ()       => api.get('/api/jobs/my'),
-  create:  (data)   => api.post('/api/jobs', data),
-  delete:  (id)     => api.delete(`/api/jobs/${id}`),
+  getAll:  (params) => api.get('/jobs', { params }),
+  getById: (id)     => api.get(`/jobs/${id}`),
+  getMy:   ()       => api.get('/jobs/my'),
+  create:  (data)   => api.post('/jobs', data),
+  delete:  (id)     => api.delete(`/jobs/${id}`),
 }
 
 export const applicationService = {
-  apply:           (data)        => api.post('/api/applications', data),
-  getMy:           ()            => api.get('/api/applications/my'),
-  getForMyJobs:    ()            => api.get('/api/applications/my-jobs'),
-  getByJob:        (id)          => api.get(`/api/applications/job/${id}`),
-  updateStatus:    (id, status)  => api.put(`/api/applications/${id}/status`, { status }),
+  apply:           (data)        => api.post('/applications', data),
+  getMy:           ()            => api.get('/applications/my'),
+  getForMyJobs:    ()            => api.get('/applications/my-jobs'),
+  getByJob:        (id)          => api.get(`/applications/job/${id}`),
+  updateStatus:    (id, status)  => api.put(`/applications/${id}/status`, { status }),
 }
 
 export const cvService = {
   upload: (file) => {
     const formData = new FormData()
     formData.append('cv', file)
-    return api.post('/api/cv/upload', formData, {
+    return api.post('/cv/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 60000,
     })
   },
-  getResult: () => api.get('/api/cv/result'),
+  getResult: () => api.get('/cv/result'),
 }
