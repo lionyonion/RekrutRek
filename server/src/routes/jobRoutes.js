@@ -1,10 +1,11 @@
 const router = require('express').Router()
 const {
-  getJobs, getJobById, createJob, deleteJob
+  getJobs, getJobById, getMyJobs, createJob, deleteJob
 } = require('../controllers/jobController')
 const { authMiddleware, requireRole } = require('../middleware/auth')
 
-router.get('/',    getJobs)
+router.get('/', getJobs)
+router.get('/my', authMiddleware, requireRole('umkm', 'corporate'), getMyJobs)
 router.get('/:id', getJobById)
 router.post('/',
   authMiddleware,

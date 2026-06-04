@@ -96,6 +96,24 @@ exports.createJob = async (req, res, next) => {
   }
 }
 
+// ── GET /api/jobs/my ──────────────────────────────────────
+exports.getMyJobs = async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT j.*, COUNT(a.id)::int AS applicant_count
+       FROM jobs j
+       LEFT JOIN applications a ON j.id = a.job_id
+       WHERE j.poster_id = $1
+       GROUP BY j.id
+       ORDER BY j.created_at DESC`,
+      [req.user.id]
+    )
+    res.json(rows)
+  } catch (err) {
+    next(err)
+  }
+}
+
 // ── DELETE /api/jobs/:id ──────────────────────────────────
 exports.deleteJob = async (req, res, next) => {
   try {

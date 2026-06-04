@@ -15,10 +15,22 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('rekrutrek_token')
     if (!token) { setLoading(false); return }
-    
+
     authService.getMe()
-      .then(({ data }) => setUser(data))
-      .catch(() => logout())
+      .then(({ data }) => {
+        setUser(data)
+        // Sync localStorage dengan data terbaru dari server
+        localStorage.setItem('rekrutrek_user', JSON.stringify(data))
+      })
+      .catch((err) => {
+        // ✅ FIX: Hanya logout kalau token benar-benar invalid (401)
+        // Kalau network error / server down (500, timeout, dsb),
+        // tetap pakai user dari localStorage yang sudah di-load di atas
+        if (err.response?.status === 401) {
+          logout()
+        }
+        // Untuk error lain: diam saja, user tetap terautentikasi dari localStorage
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -35,7 +47,7 @@ export function AuthProvider({ children }) {
       email,
       password,
       user_type,
-      ...extraData 
+      ...extraData
     }
 
     const { data } = await authService.register(payload)

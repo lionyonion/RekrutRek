@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Target, Store, Building2, ArrowLeft, Home, Search, Cpu, Bell, User, LogOut, Bookmark, MapPin, DollarSign, Users, FileText } from 'lucide-react';
+import { Target, Store, Building2, Home, Search, Cpu, Bell, User, LogOut, Bookmark, MapPin, Mail, Camera, Briefcase, Users, FileText } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { MenuButton, MobileMenuButton, InputField } from "../components/SharedUI";
 import { NotificationModal } from "../components/NotificationModal";
+import { profileService, jobService, applicationService } from "../services/api";
 
 // ==========================================
 // DASHBOARD: Corporate
@@ -13,11 +14,96 @@ export default function CorporateDashboard() {
   const { user, logout } = useAuth(); 
   
   const [activeMenu, setActiveMenu] = useState('home');
+  const [selectedNotif, setSelectedNotif] = useState(null);
+
+  const [profile, setProfile] = useState({
+    company_name: "",
+    industry: "",
+    address: "",
+    hrd_name: "",
+    company_size: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    profileService.get()
+      .then((res) => {
+        if (res.data) setProfile((prev) => ({ ...prev, ...res.data }));
+      })
+      .catch((err) => console.error("Gagal memuat profil:", err));
+  }, []);
+
+  const handleProfileChange = (e) => {
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    try {
+      await profileService.update(profile);
+      alert("Profil berhasil disimpan!");
+    } catch (error) {
+      alert("Gagal menyimpan profil. Coba lagi.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "CP";
+    const names = name.trim().split(" ");
+    if (names.length >= 2) return (names[0][0] + names[1][0]).toUpperCase();
+    return names[0].substring(0, 2).toUpperCase();
+  };
+
+  const displayName = profile.company_name || 'Perusahaan';
+  const displayInitials = getInitials(displayName);
+
+  // Data dari API
+  const [myJobs, setMyJobs] = useState([]);
+  const [applicants, setApplicants] = useState([]);
+  const [jobForm, setJobForm] = useState({ title: "", dept: "", work_type: "wfo", requirements: "" });
+  const [isPostingJob, setIsPostingJob] = useState(false);
+
+  useEffect(() => {
+    jobService.getMy()
+      .then((res) => setMyJobs(res.data || []))
+      .catch((err) => console.error("Gagal memuat lowongan:", err));
+  }, []);
+
+  useEffect(() => {
+    if (activeMenu === "screening") {
+      applicationService.getForMyJobs()
+        .then((res) => setApplicants(res.data || []))
+        .catch((err) => console.error("Gagal memuat pelamar:", err));
+    }
+  }, [activeMenu]);
+
+  const handlePostJob = async (e) => {
+    e.preventDefault();
+    if (!jobForm.title) return alert("Job title wajib diisi.");
+    setIsPostingJob(true);
+    try {
+      await jobService.create({
+        title: jobForm.title,
+        description: jobForm.dept,
+        requirements: jobForm.requirements,
+      });
+      alert("Lowongan berhasil dipublish! AI Screening diaktifkan.");
+      setActiveMenu("home");
+      const res = await jobService.getMy();
+      setMyJobs(res.data || []);
+    } catch (err) {
+      alert(err.response?.data?.error || "Gagal posting lowongan.");
+    } finally {
+      setIsPostingJob(false);
+    }
+  };
 
   const stats = [
-    { label: "Lowongan Aktif", value: "5" },
-    { label: "Kandidat Tersaring", value: "120" },
-    { label: "Interview", value: "20" },
+    { label: "Lowongan Aktif", value: myJobs.filter(j => j.is_open).length.toString() },
+    { label: "Total Pelamar", value: myJobs.reduce((sum, j) => sum + (j.applicant_count || 0), 0).toString() },
+    { label: "Total Lowongan", value: myJobs.length.toString() },
   ];
 
   const pipeline = [
@@ -50,7 +136,7 @@ export default function CorporateDashboard() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans flex flex-col md:flex-row selection:bg-[#F8C662] selection:text-[#2C263F]">
-      {/* Sidebar */}
+     
       <aside className="hidden md:flex w-72 flex-col justify-between border-r border-[#2C263F]/10 bg-white/50 backdrop-blur-xl sticky top-0 h-screen p-6">
         <div>
           <div className="flex items-center gap-3 mb-10 cursor-pointer" onClick={() => navigate("/")}>
@@ -69,9 +155,9 @@ export default function CorporateDashboard() {
         </div>
         <div className="mt-auto">
           <div className="p-4 rounded-2xl bg-[#595082]/10 border border-[#595082]/20 mb-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#595082] text-[#F8C662] flex items-center justify-center font-bold">CP</div>
+            <div className="w-10 h-10 rounded-full bg-[#595082] text-[#F8C662] flex items-center justify-center font-bold">{displayInitials}</div>
             <div>
-              <p className="text-sm font-bold text-[#2C263F]">PT Rekrut Teknologi</p>
+              <p className="text-sm font-bold text-[#2C263F]">{displayName}</p>
               <p className="text-xs text-[#2C263F]/60">Corporate HR</p>
             </div>
           </div>
@@ -81,7 +167,6 @@ export default function CorporateDashboard() {
         </div>
       </aside>
 
-      {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between p-4 bg-white border-b border-[#2C263F]/10 sticky top-0 z-20">
         <div className="flex items-center gap-2">
           <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-lg object-cover bg-[#2C263F]/5 p-0.5"
@@ -89,18 +174,16 @@ export default function CorporateDashboard() {
           <div className="hidden w-8 h-8 rounded-lg items-center justify-center font-black bg-[#41644A] text-[#F8C662] text-sm">R</div>
           <h1 className="text-lg font-bold tracking-tight text-[#2C263F]">Rekrut<span className="text-[#F8C662]">Rek</span></h1>
         </div>
-        <div className="w-8 h-8 rounded-full bg-[#595082] text-[#F8C662] flex items-center justify-center font-bold text-sm">CP</div>
+        <div className="w-8 h-8 rounded-full bg-[#595082] text-[#F8C662] flex items-center justify-center font-bold text-sm">{displayInitials}</div>
       </header>
 
-      {/* Main */}
       <main className="flex-1 p-6 sm:p-10 lg:p-12 overflow-y-auto pb-24 md:pb-12 relative">
         <NotificationModal notif={selectedNotif} onClose={() => setSelectedNotif(null)} />
 
-        {/* --- VIEW: HOME --- */}
         {activeMenu === "home" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-10">
-              <h2 className="text-3xl font-black text-[#2C263F] mb-2">Halo, PT Rekrut Teknologi 👋</h2>
+              <h2 className="text-3xl font-black text-[#2C263F] mb-2">{displayName}👋</h2>
               <p className="text-[#2C263F]/60">Pantau proses screening, ranking kandidat, dan pipeline rekrutmen perusahaanmu.</p>
             </header>
 
@@ -115,7 +198,6 @@ export default function CorporateDashboard() {
               </button>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
               {stats.map((s) => (
                 <div key={s.label} className="bg-white border border-[#2C263F]/10 rounded-2xl p-5">
@@ -125,7 +207,6 @@ export default function CorporateDashboard() {
               ))}
             </div>
 
-            {/* Top Candidates */}
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#2C263F] flex items-center gap-2"><FileText className="w-6 h-6 text-[#595082]" /> Kandidat Terbaik</h3>
               <button className="text-sm font-bold text-[#595082] hover:underline">Lihat Semua</button>
@@ -155,7 +236,6 @@ export default function CorporateDashboard() {
               ))}
             </div>
 
-            {/* Pipeline */}
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-[#2C263F] flex items-center gap-2"><Users className="w-6 h-6 text-[#595082]" /> Pipeline Rekrutmen</h3>
               <button className="text-sm font-bold text-[#595082] hover:underline">Atur Tahap</button>
@@ -171,7 +251,6 @@ export default function CorporateDashboard() {
           </div>
         )}
 
-        {/* --- VIEW: LOWONGAN --- */}
         {activeMenu === "jobs" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-8">
@@ -179,15 +258,17 @@ export default function CorporateDashboard() {
               <p className="text-[#2C263F]/60">Jabarkan kualifikasi dengan detail. AI akan menggunakannya untuk men-screening CV pelamar.</p>
             </header>
             <div className="bg-white border border-[#2C263F]/10 rounded-3xl p-6 sm:p-8 shadow-sm">
-              <form onSubmit={(e) => { e.preventDefault(); alert("Lowongan berhasil diposting! AI Screening diaktifkan."); setActiveMenu("home"); }} className="flex flex-col gap-5">
-                <InputField label="Job Title" name="title" icon={<Briefcase className="w-5 h-5" />} placeholder="e.g. Senior Frontend Developer" />
+              <form onSubmit={handlePostJob} className="flex flex-col gap-5">
+                <InputField label="Job Title" name="title" icon={<Briefcase className="w-5 h-5" />} placeholder="e.g. Senior Frontend Developer"
+                  value={jobForm.title} onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <InputField label="Departemen" name="dept" icon={<Building2 className="w-5 h-5" />} placeholder="e.g. Engineering / Marketing" />
+                  <InputField label="Departemen" name="dept" icon={<Building2 className="w-5 h-5" />} placeholder="e.g. Engineering / Marketing"
+                    value={jobForm.dept} onChange={(e) => setJobForm({ ...jobForm, dept: e.target.value })} />
                   <div>
                     <label className="block text-xs font-bold text-[#2C263F] mb-1.5 uppercase tracking-wide opacity-80">Tipe Pekerjaan</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#2C263F]/40"><MapPin className="w-5 h-5" /></div>
-                      <select className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#FDFBF7] border border-[#2C263F]/10 text-[#2C263F] focus:outline-none focus:border-[#F8C662] transition-all font-medium appearance-none">
+                      <select value={jobForm.work_type} onChange={(e) => setJobForm({ ...jobForm, work_type: e.target.value })} className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#FDFBF7] border border-[#2C263F]/10 text-[#2C263F] focus:outline-none focus:border-[#F8C662] transition-all font-medium appearance-none">
                         <option value="wfo">Work From Office (WFO)</option>
                         <option value="wfh">Remote (WFH)</option>
                         <option value="hybrid">Hybrid</option>
@@ -199,7 +280,9 @@ export default function CorporateDashboard() {
                   <label className="block text-xs font-bold text-[#2C263F] mb-1.5 uppercase tracking-wide opacity-80">Persyaratan Utama (Di-scan AI)</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 pt-3.5 pointer-events-none text-[#2C263F]/40"><Cpu className="w-5 h-5" /></div>
-                    <textarea rows="4" placeholder={"- Minimal S1 Teknik Informatika\n- Menguasai React.js dan Node.js\n- Pengalaman minimal 3 tahun"} className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#FDFBF7] border border-[#2C263F]/10 text-[#2C263F] focus:outline-none focus:border-[#F8C662] transition-all placeholder:text-[#2C263F]/30 leading-relaxed" />
+                    <textarea rows="4" value={jobForm.requirements} onChange={(e) => setJobForm({ ...jobForm, requirements: e.target.value })}
+                      placeholder={"- Minimal S1 Teknik Informatika\n- Menguasai React.js dan Node.js\n- Pengalaman minimal 3 tahun"}
+                      className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#FDFBF7] border border-[#2C263F]/10 text-[#2C263F] focus:outline-none focus:border-[#F8C662] transition-all placeholder:text-[#2C263F]/30 leading-relaxed" />
                   </div>
                   <p className="text-[10px] text-[#2C263F]/50 mt-1.5 font-bold uppercase">Gunakan poin-poin agar ekstraksi AI lebih akurat.</p>
                 </div>
@@ -207,8 +290,8 @@ export default function CorporateDashboard() {
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-xs font-bold border border-purple-100">
                     <Cpu className="w-3.5 h-3.5" /> Auto AI-Screening ON
                   </div>
-                  <button type="submit" className="w-full sm:w-auto px-8 py-4 bg-[#595082] text-white rounded-xl font-bold shadow-md hover:bg-[#2C263F] transition-colors flex items-center justify-center gap-2">
-                    <Target className="w-4 h-4" /> Publish & Aktifkan AI
+                  <button type="submit" disabled={isPostingJob} className={`w-full sm:w-auto px-8 py-4 bg-[#595082] text-white rounded-xl font-bold shadow-md transition-colors flex items-center justify-center gap-2 ${isPostingJob ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2C263F]'}`}>
+                    <Target className="w-4 h-4" /> {isPostingJob ? "Mempublish..." : "Publish & Aktifkan AI"}
                   </button>
                 </div>
               </form>
@@ -216,26 +299,56 @@ export default function CorporateDashboard() {
           </div>
         )}
 
-        {/* --- VIEW: AI SCREENING --- */}
         {activeMenu === "screening" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-8">
               <h2 className="text-3xl font-black text-[#2C263F] mb-2">Panel AI Screening 🤖</h2>
-              <p className="text-[#2C263F]/60">Hasil pembacaan CV pelamar yang diurutkan secara cerdas oleh AI.</p>
+              <p className="text-[#2C263F]/60">Pelamar diurutkan berdasarkan skor AI dari yang paling cocok.</p>
             </header>
-            <div className="bg-white border border-[#2C263F]/10 rounded-3xl p-6 sm:p-8 shadow-sm">
-              <div className="flex flex-col items-center justify-center py-10 text-center">
-                <div className="w-20 h-20 bg-purple-50 rounded-full flex items-center justify-center mb-4 border-2 border-purple-100">
-                  <Cpu className="w-10 h-10 text-purple-500" />
-                </div>
-                <h3 className="text-xl font-bold text-[#2C263F] mb-2">Menunggu Data Pelamar...</h3>
-                <p className="text-[#2C263F]/60 text-sm max-w-md">Belum ada CV baru yang masuk untuk di-scan oleh sistem AI hari ini. Cek kembali nanti.</p>
+            {applicants.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {applicants.map((a) => (
+                  <div key={a.id} className="bg-white border border-[#2C263F]/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-[#595082]/10 text-[#595082] flex items-center justify-center font-bold text-lg">
+                        {(a.full_name || a.email || "?")[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#2C263F]">{a.full_name || a.email}</h4>
+                        <p className="text-sm text-[#2C263F]/60">{a.job_title}</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {a.match_score && (
+                            <span className="px-2 py-0.5 bg-[#595082]/10 text-[#595082] rounded-full text-xs font-bold">
+                              AI Score: {Math.round(a.match_score)}%
+                            </span>
+                          )}
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${a.status === 'accepted' ? 'bg-green-100 text-green-700' : a.status === 'rejected' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-700'}`}>
+                            {a.status === 'pending' ? 'Baru Masuk' : a.status === 'reviewed' ? 'Ditinjau' : a.status === 'accepted' ? 'Diterima' : 'Ditolak'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => applicationService.updateStatus(a.id, 'accepted').then(() => applicationService.getForMyJobs().then(r => setApplicants(r.data || [])))} className="px-4 py-2 bg-[#595082] text-white rounded-xl text-sm font-bold hover:bg-[#2C263F] transition-colors">Terima</button>
+                      <button onClick={() => applicationService.updateStatus(a.id, 'rejected').then(() => applicationService.getForMyJobs().then(r => setApplicants(r.data || [])))} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm font-bold hover:bg-red-100 transition-colors">Tolak</button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            ) : (
+              <div className="bg-white border border-[#2C263F]/10 rounded-3xl p-6 sm:p-8 shadow-sm">
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <div className="w-20 h-20 bg-purple-50 rounded-full flex items-center justify-center mb-4 border-2 border-purple-100">
+                    <Cpu className="w-10 h-10 text-purple-500" />
+                  </div>
+                  <h3 className="text-xl font-bold text-[#2C263F] mb-2">Belum Ada Pelamar</h3>
+                  <p className="text-[#2C263F]/60 text-sm max-w-md">Pelamar akan muncul di sini setelah jobseeker melamar lowongan Anda.</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* --- VIEW: PROFILE CORPORATE --- */}
         {activeMenu === "profile" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-8">
@@ -250,28 +363,39 @@ export default function CorporateDashboard() {
                     <button className="absolute bottom-1 right-1 p-2 bg-[#595082] rounded-full shadow-md text-white hover:scale-110 transition-transform"><Camera className="w-4 h-4" /></button>
                   </div>
                   <div className="text-center">
-                    <h3 className="font-bold text-lg text-[#2C263F]">
-                      {user?.company_name || 'Nama Perusahaan Belum Diatur'}
-                    </h3>
-                    <p className="text-xs text-[#2C263F]/50">
-                      {user?.industry || 'Industri Belum Diatur'}
-                    </p>
+                    <h3 className="font-bold text-lg text-[#2C263F]">{displayName}</h3>
+                    <p className="text-xs text-[#2C263F]/50">{profile.industry || 'Industri Belum Diatur'}</p>
                   </div>
                 </div>
                 <div className="flex-1 w-full space-y-5">
-                  <InputField label="Nama Perusahaan" name="perusahaan" icon={<Building2 className="w-5 h-5" />} defaultValue={user?.company_name || ''} />
-                    <InputField label="Industri" name="industri" icon={<Target className="w-5 h-5" />} defaultValue={user?.industry || ''} />
-                    <InputField label="Email HR / Rekrutmen" name="emailHR" type="email" icon={<Mail className="w-5 h-5" />} defaultValue={user?.email || ''} disabled />
-                    <InputField label="Website Perusahaan" name="website" icon={<Search className="w-5 h-5" />} defaultValue={user?.website || ''} />
+                  <InputField label="Nama Perusahaan" name="company_name" icon={<Building2 className="w-5 h-5" />} value={profile.company_name || ""} onChange={handleProfileChange} />
+                  <InputField label="Industri" name="industry" icon={<Target className="w-5 h-5" />} value={profile.industry || ""} onChange={handleProfileChange} />
+                  <InputField label="Email HR / Rekrutmen" name="email" type="email" icon={<Mail className="w-5 h-5" />} value={user?.email || ""} disabled />
+                  <InputField label="Nama HRD / PIC" name="hrd_name" icon={<User className="w-5 h-5" />} value={profile.hrd_name || ""} onChange={handleProfileChange} />
+                  <div>
+                    <label className="block text-xs font-bold text-[#2C263F] mb-1.5 uppercase tracking-wide opacity-80">Ukuran Perusahaan</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#2C263F]/40"><Users className="w-5 h-5" /></div>
+                      <select name="company_size" value={profile.company_size || ""} onChange={handleProfileChange} className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#FDFBF7] border border-[#2C263F]/10 text-[#2C263F] focus:outline-none focus:border-[#F8C662] transition-all font-medium appearance-none">
+                        <option value="">Pilih Ukuran</option>
+                        <option value="1-50">1 - 50 karyawan</option>
+                        <option value="51-200">51 - 200 karyawan</option>
+                        <option value="201-500">201 - 500 karyawan</option>
+                        <option value="500+">500+ karyawan</option>
+                      </select>
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-xs font-bold text-[#2C263F] mb-1.5 uppercase tracking-wide opacity-80">Alamat Kantor Pusat</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 pt-3.5 pointer-events-none text-[#2C263F]/40"><MapPin className="w-5 h-5" /></div>
-                      <textarea rows="3" className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#FDFBF7] border border-[#2C263F]/10 text-[#2C263F] focus:outline-none focus:border-[#F8C662] focus:ring-1 focus:ring-[#F8C662] transition-all" defaultValue="Gedung Cyber, Lantai 12. Jl. Kuningan Barat, Jakarta Selatan." />
+                      <textarea rows="3" name="address" value={profile.address || ""} onChange={handleProfileChange} className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#FDFBF7] border border-[#2C263F]/10 text-[#2C263F] focus:outline-none focus:border-[#F8C662] focus:ring-1 focus:ring-[#F8C662] transition-all" />
                     </div>
                   </div>
                   <div className="pt-4 flex justify-end">
-                    <button className="px-8 py-3.5 bg-[#595082] text-white rounded-xl font-bold shadow-md hover:bg-[#2C263F] transition-colors">Simpan Profil</button>
+                    <button onClick={handleSaveProfile} disabled={isSaving} className={`px-8 py-3.5 bg-[#595082] text-white rounded-xl font-bold shadow-md transition-colors ${isSaving ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2C263F]'}`}>
+                      {isSaving ? 'Menyimpan...' : 'Simpan Profil'}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -279,7 +403,6 @@ export default function CorporateDashboard() {
           </div>
         )}
 
-        {/* --- VIEW: NOTIFICATIONS --- */}
         {activeMenu === "notifications" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-10">
@@ -305,7 +428,7 @@ export default function CorporateDashboard() {
         )}
       </main>
 
-      {/* Mobile Bottom Nav */}
+     
       <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-[#2C263F]/10 pb-safe z-30">
         <div className="flex items-center justify-around p-2">
           <MobileMenuButton icon={<Home />} label="Home" isActive={activeMenu === "home"} onClick={() => setActiveMenu("home")} />

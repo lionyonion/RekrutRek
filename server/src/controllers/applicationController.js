@@ -72,12 +72,37 @@ exports.apply = async (req, res, next) => {
 exports.getMyApplications = async (req, res, next) => {
   try {
     const { rows } = await query(
-      `SELECT a.*, j.title, j.address, j.salary_min, j.salary_max,
-              j.job_type
+      `SELECT a.*, j.title, j.address, j.salary_min, j.salary_max, j.job_type,
+              COALESCE(up.business_name, cp.company_name) AS poster_name
        FROM applications a
        JOIN jobs j ON a.job_id = j.id
+       LEFT JOIN umkm_profiles up ON j.poster_id = up.user_id
+       LEFT JOIN corporate_profiles cp ON j.poster_id = cp.user_id
        WHERE a.applicant_id = $1
        ORDER BY a.applied_at DESC`,
+      [req.user.id]
+    )
+    res.json(rows)
+  } catch (err) {
+    next(err)
+  }
+}
+
+// ── GET /api/applications/my-jobs ────────────────────────
+// Semua pelamar untuk semua lowongan milik UMKM/Corporate
+exports.getApplicantsForMyJobs = async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT a.*,
+              u.email,
+              jp.full_name, jp.phone, jp.cv_url, jp.salary_expect, jp.availability,
+              j.title AS job_title, j.job_type
+       FROM applications a
+       JOIN users u ON a.applicant_id = u.id
+       LEFT JOIN jobseeker_profiles jp ON a.applicant_id = jp.user_id
+       JOIN jobs j ON a.job_id = j.id
+       WHERE j.poster_id = $1
+       ORDER BY a.match_score DESC NULLS LAST`,
       [req.user.id]
     )
     res.json(rows)

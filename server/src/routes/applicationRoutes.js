@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const {
-  apply, getMyApplications, getApplicantsByJob, updateStatus
+  apply, getMyApplications, getApplicantsForMyJobs, getApplicantsByJob, updateStatus
 } = require('../controllers/applicationController')
 const { authMiddleware, requireRole } = require('../middleware/auth')
 
@@ -13,6 +13,11 @@ router.get('/my',
   authMiddleware,
   requireRole('jobseeker'),
   getMyApplications
+)
+router.get('/my-jobs',
+  authMiddleware,
+  requireRole('umkm', 'corporate'),
+  getApplicantsForMyJobs
 )
 router.get('/job/:id',
   authMiddleware,

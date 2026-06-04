@@ -54,17 +54,12 @@ export default function AuthPage({ isLogin }) {
         // --- LOGIN MENGGUNAKAN USEAUTH ---
         const loggedInUser = await login(email, password);
         
-        // SATPAM PENGECEK ROLE:
-        // Pastikan nama kolom role dari backend (misal: user_type atau role) cocok dengan roleId
         if (loggedInUser.user_type !== roleId) {
           setErrorMsg(`Akses ditolak! Akun ini terdaftar sebagai ${loggedInUser.user_type}, bukan ${roleId}.`);
           setIsLoading(false);
-          // Keluarkan user secara paksa karena salah portal
-          // logout(); // (opsional, panggil jika kamu meng-import logout dari useAuth)
           return; 
         }
       } else {
-        // roleId akan otomatis menjadi user_type (jobseeker/umkm/corporate)
         await register(email, password, roleId, otherData);
       }
 
