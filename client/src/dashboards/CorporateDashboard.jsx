@@ -1,24 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Building2,
-  MapPin,
-  Cpu,
-  Users,
-  Sparkles,
-  Target,
-  Home,
-  Search,
-  FileText,
-  Bell,
-  LogOut,
-  Bookmark,
-  Camera,
-  User,
-  Mail,
-  CheckCircle,
-  Briefcase,
-} from "lucide-react";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Target, Store, Building2, ArrowLeft, Home, Search, Cpu, Bell, User, LogOut, Bookmark, MapPin, DollarSign, Users, FileText } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import { MenuButton, MobileMenuButton, InputField } from "../components/SharedUI";
 import { NotificationModal } from "../components/NotificationModal";
 
@@ -27,8 +10,9 @@ import { NotificationModal } from "../components/NotificationModal";
 // ==========================================
 export default function CorporateDashboard() {
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState("home");
-  const [selectedNotif, setSelectedNotif] = useState(null);
+  const { user, logout } = useAuth(); 
+  
+  const [activeMenu, setActiveMenu] = useState('home');
 
   const stats = [
     { label: "Lowongan Aktif", value: "5" },
@@ -266,15 +250,19 @@ export default function CorporateDashboard() {
                     <button className="absolute bottom-1 right-1 p-2 bg-[#595082] rounded-full shadow-md text-white hover:scale-110 transition-transform"><Camera className="w-4 h-4" /></button>
                   </div>
                   <div className="text-center">
-                    <h3 className="font-bold text-lg text-[#2C263F]">PT Rekrut Teknologi</h3>
-                    <p className="text-xs text-[#2C263F]/50">Technology & IT Services</p>
+                    <h3 className="font-bold text-lg text-[#2C263F]">
+                      {user?.company_name || 'Nama Perusahaan Belum Diatur'}
+                    </h3>
+                    <p className="text-xs text-[#2C263F]/50">
+                      {user?.industry || 'Industri Belum Diatur'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex-1 w-full space-y-5">
-                  <InputField label="Nama Perusahaan" name="perusahaan" icon={<Building2 className="w-5 h-5" />} defaultValue="PT Rekrut Teknologi Indonesia" />
-                  <InputField label="Industri" name="industri" icon={<Target className="w-5 h-5" />} defaultValue="Information Technology" />
-                  <InputField label="Email HR / Rekrutmen" name="emailHR" type="email" icon={<Mail className="w-5 h-5" />} defaultValue="hr@rekruttek.com" />
-                  <InputField label="Website Perusahaan" name="website" icon={<Search className="w-5 h-5" />} defaultValue="www.rekruttek.com" />
+                  <InputField label="Nama Perusahaan" name="perusahaan" icon={<Building2 className="w-5 h-5" />} defaultValue={user?.company_name || ''} />
+                    <InputField label="Industri" name="industri" icon={<Target className="w-5 h-5" />} defaultValue={user?.industry || ''} />
+                    <InputField label="Email HR / Rekrutmen" name="emailHR" type="email" icon={<Mail className="w-5 h-5" />} defaultValue={user?.email || ''} disabled />
+                    <InputField label="Website Perusahaan" name="website" icon={<Search className="w-5 h-5" />} defaultValue={user?.website || ''} />
                   <div>
                     <label className="block text-xs font-bold text-[#2C263F] mb-1.5 uppercase tracking-wide opacity-80">Alamat Kantor Pusat</label>
                     <div className="relative">
