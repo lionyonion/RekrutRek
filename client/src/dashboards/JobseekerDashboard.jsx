@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Briefcase,
@@ -26,7 +26,8 @@ import {
 import { MenuButton, MobileMenuButton, InputField } from "../components/SharedUI";
 import { NotificationModal } from "../components/NotificationModal";
 import { JobApplyModal } from "../components/JobApplyModal";
-
+import { profileService } from "../services/api";
+import { useAuth } from "../hooks/useAuth";
 // ==========================================
 // DASHBOARD: Jobseeker
 // ==========================================
@@ -38,6 +39,47 @@ export default function JobseekerDashboard() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [selectedNotif, setSelectedNotif] = useState(null);
   const [appFilter, setAppFilter] = useState("all");
+  const { user, logout } = useAuth();
+
+  const [profile, setProfile] = useState({
+      nama: "",
+      email: user?.email || "",
+      alamat: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    profileService.get()
+      .then((res) => {
+        if (res.data) setProfile((prev) => ({ ...prev, ...res.data }));
+      })
+      .catch((err) => console.error("Gagal memuat profil:", err));
+  }, []);
+
+  const handleProfileChange = (e) => {
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    try {
+      await profileService.update(profile);
+      alert("Profil berhasil disimpan!");
+    } catch (error) {
+      alert("Gagal menyimpan profil. Coba lagi.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const getInitials = (name) => {
+    if (!name) return "P"; 
+    const names = name.trim().split(" ");
+    if (names.length >= 2) return (names[0][0] + names[1][0]).toUpperCase();
+    return names[0].substring(0, 2).toUpperCase();
+  };
+
+  const displayName = profile.nama || 'Pelamar';
+  const displayInitials = getInitials(displayName);
 
   const aiRecommendations = [
     { id: 1, role: "Barista & Kasir", company: "Kopi Kenangan Senja", type: "umkm", salary: "Rp 2.5 Jt - 3 Jt", distance: "1.2 km", match: 95, icon: <Store className="w-5 h-5" /> },
@@ -98,9 +140,11 @@ export default function JobseekerDashboard() {
         </div>
         <div className="mt-auto">
           <div className="p-4 rounded-2xl bg-[#41644A]/10 border border-[#41644A]/20 mb-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#41644A] text-[#F8C662] flex items-center justify-center font-bold">AB</div>
+            <div className="w-10 h-10 rounded-full bg-[#41644A] text-[#F8C662] flex items-center justify-center font-bold">
+              {displayInitials}
+            </div>
             <div>
-              <p className="text-sm font-bold text-[#2C263F]">Ahmad Budi</p>
+              <p className="text-sm font-bold text-[#2C263F]">{displayName}</p>
               <p className="text-xs text-[#2C263F]/60">Pelamar Aktif</p>
             </div>
           </div>
@@ -118,8 +162,9 @@ export default function JobseekerDashboard() {
           <div className="hidden w-8 h-8 rounded-lg items-center justify-center font-black bg-[#41644A] text-[#F8C662] text-sm">R</div>
           <h1 className="text-lg font-bold tracking-tight text-[#2C263F]">Rekrut<span className="text-[#F8C662]">Rek</span></h1>
         </div>
-        <div className="w-8 h-8 rounded-full bg-[#41644A] text-[#F8C662] flex items-center justify-center font-bold text-sm">AB</div>
-      </header>
+        <div className="w-8 h-8 rounded-full bg-[#41644A] text-[#F8C662] flex items-center justify-center font-bold text-sm">
+          {displayInitials}
+        </div>      </header>
 
       {/* Main Content */}
       <main className="flex-1 p-6 sm:p-10 lg:p-12 overflow-y-auto pb-24 md:pb-12 relative">
@@ -130,7 +175,7 @@ export default function JobseekerDashboard() {
         {activeMenu === "home" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="mb-10">
-              <h2 className="text-3xl font-black text-[#2C263F] mb-2">Halo, Ahmad! 👋</h2>
+              <h2 className="text-3xl font-black text-[#2C263F] mb-2">Halo, {displayName}! 👋</h2>
               <p className="text-[#2C263F]/60">Berikut adalah rekomendasi lowongan berdasarkan skill dan lokasimu.</p>
             </header>
 
@@ -330,14 +375,14 @@ export default function JobseekerDashboard() {
                     </button>
                   </div>
                   <div className="text-center">
-                    <h3 className="font-bold text-lg text-[#2C263F]">Ahmad Budi</h3>
+                    <h3 className="font-bold text-lg text-[#2C263F]">{displayName}</h3>
                     <p className="text-xs text-[#2C263F]/50">Pelamar Aktif</p>
                   </div>
                 </div>
                 <div className="flex-1 w-full space-y-5">
-                  <InputField label="Nama Lengkap" name="nama" icon={<User className="w-5 h-5" />} defaultValue="Ahmad Budi" />
-                  <InputField label="Email" name="email" type="email" icon={<Mail className="w-5 h-5" />} defaultValue="ahmad.budi@email.com" />
-                  <InputField label="Alamat Domisili" name="alamat" icon={<MapPin className="w-5 h-5" />} defaultValue="Jl. Sudirman No. 123, Jakarta" />
+                  <InputField label="Nama Lengkap" name="nama" icon={<User className="w-5 h-5" />} value={profile.nama || ""} onChange={handleProfileChange} />
+                  <InputField label="Email" name="email" type="email" icon={<Mail className="w-5 h-5" />} value={profile.email || ""} disabled />
+                  <InputField label="Alamat Domisili" name="alamat" icon={<MapPin className="w-5 h-5" />} value={profile.alamat || ""} onChange={handleProfileChange} />
                   <div>
                     <label className="block text-xs font-bold text-[#2C263F] mb-1.5 uppercase tracking-wide opacity-80">Curriculum Vitae (CV)</label>
                     <div className="border-2 border-dashed border-[#2C263F]/20 rounded-2xl p-6 flex flex-col items-center justify-center bg-[#FDFBF7] hover:bg-[#2C263F]/5 cursor-pointer transition-colors group">
@@ -347,7 +392,9 @@ export default function JobseekerDashboard() {
                     </div>
                   </div>
                   <div className="pt-4 flex justify-end">
-                    <button className="px-8 py-3.5 bg-[#41644A] text-white rounded-xl font-bold shadow-md hover:bg-[#213722] transition-colors">Simpan Perubahan</button>
+                    <button onClick={handleSaveProfile} disabled={isSaving} className={`px-8 py-3.5 bg-[#41644A] text-white rounded-xl font-bold shadow-md transition-colors ${isSaving ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#213722]'}`}>
+                      {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                    </button>
                   </div>
                 </div>
               </div>

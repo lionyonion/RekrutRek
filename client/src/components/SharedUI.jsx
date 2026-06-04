@@ -10,6 +10,7 @@ export function InputField({
   icon,
   onChange,
   defaultValue,
+  value, 
   placeholder,
 }) {
   return (
@@ -24,6 +25,7 @@ export function InputField({
         <input
           type={type}
           name={name}
+          value={value} 
           defaultValue={defaultValue}
           placeholder={placeholder || `Masukkan ${label.toLowerCase()}`}
           className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white border border-[#2C263F]/10 text-[#2C263F] placeholder-[#2C263F]/30 focus:outline-none focus:border-[#F8C662] focus:ring-1 focus:ring-[#F8C662] transition-all"
