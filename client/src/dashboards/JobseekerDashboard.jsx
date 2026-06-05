@@ -31,6 +31,7 @@ import { JobApplyModal } from "../components/JobApplyModal";
 import JobMapView from "../components/JobMapView";
 import { profileService, jobService, applicationService, cvService } from "../services/api";
 import { useAuth } from "../hooks/useAuth";
+import { useReadNotifs } from "../hooks/useReadNotifs";
 
 const resolveUrl = (url) => {
   if (!url) return null
@@ -71,6 +72,7 @@ export default function JobseekerDashboard() {
   const [appFilter, setAppFilter] = useState("all");
   const [expandedReq, setExpandedReq] = useState({});
   const { user, logout } = useAuth();
+  const { unreadCount, markAllRead } = useReadNotifs("notif_read_jobseeker");
 
   const [profile, setProfile] = useState({
     nama: "",
@@ -304,6 +306,17 @@ export default function JobseekerDashboard() {
       };
     });
 
+  const notifIds = realNotifs.map((n) => n.id);
+  const unreadNotifCount = unreadCount(notifIds);
+
+  // Tandai semua notif sebagai sudah dibaca saat tab notifikasi dibuka
+  useEffect(() => {
+    if (activeMenu === "notifications" && notifIds.length > 0) {
+      markAllRead(notifIds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMenu, realNotifs.length]);
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans flex flex-col md:flex-row selection:bg-[#F8C662] selection:text-[#2C263F]">
       {/* Sidebar */}
@@ -320,7 +333,7 @@ export default function JobseekerDashboard() {
             <MenuButton icon={<Search />} label="Cari Lowongan" isActive={activeMenu === "search"} onClick={() => setActiveMenu("search")} />
             <MenuButton icon={<Map />} label="Peta Lowongan" isActive={activeMenu === "map"} onClick={() => setActiveMenu("map")} />
             <MenuButton icon={<FileText />} label="Lamaran Saya" badge={myApplications.length > 0 ? String(myApplications.length) : undefined} isActive={activeMenu === "applications"} onClick={() => setActiveMenu("applications")} />
-            <MenuButton icon={<Bell />} label="Notifikasi" badge={realNotifs.length > 0 ? String(realNotifs.length) : undefined} isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
+            <MenuButton icon={<Bell />} label="Notifikasi" badge={unreadNotifCount > 0 ? String(unreadNotifCount) : undefined} isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
             <MenuButton icon={<User />} label="Profil Saya" isActive={activeMenu === "profile"} onClick={() => setActiveMenu("profile")} />
           </nav>
         </div>

@@ -25,6 +25,7 @@ import { MenuButton, MobileMenuButton, InputField } from "../components/SharedUI
 import MapPicker from "../components/MapPicker";
 import { profileService, jobService, applicationService } from "../services/api";
 import { useAuth } from "../hooks/useAuth";
+import { useReadNotifs } from "../hooks/useReadNotifs";
 
 // Modal untuk review CV + detail kandidat
 const resolveUrl = (url) => {
@@ -124,6 +125,7 @@ function CandidateModal({ candidate, onClose, onStatusChange }) {
 export default function UmkmDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { unreadCount, markAllRead } = useReadNotifs("notif_read_umkm");
   const [activeMenu, setActiveMenu] = useState("home");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const photoInputRef = useRef(null);
@@ -264,6 +266,15 @@ export default function UmkmDashboard() {
 
   // Real notifications from pending applications
   const pendingCandidates = candidates.filter((c) => c.status === "pending");
+  const notifIds = pendingCandidates.map((c) => c.id);
+  const unreadNotifCount = unreadCount(notifIds);
+
+  useEffect(() => {
+    if (activeMenu === "notifications" && notifIds.length > 0) {
+      markAllRead(notifIds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMenu, pendingCandidates.length]);
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans flex flex-col md:flex-row selection:bg-[#F8C662] selection:text-[#2C263F]">
@@ -288,7 +299,7 @@ export default function UmkmDashboard() {
             <MenuButton icon={<Home />} label="Home" isActive={activeMenu === "home"} onClick={() => setActiveMenu("home")} />
             <MenuButton icon={<Search />} label="Buat Lowongan" isActive={activeMenu === "jobs"} onClick={() => setActiveMenu("jobs")} />
             <MenuButton icon={<FileText />} label="Kandidat" badge={candidates.length > 0 ? String(candidates.length) : undefined} isActive={activeMenu === "candidates"} onClick={() => setActiveMenu("candidates")} />
-            <MenuButton icon={<Bell />} label="Notifikasi" badge={pendingCandidates.length > 0 ? String(pendingCandidates.length) : undefined} isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
+            <MenuButton icon={<Bell />} label="Notifikasi" badge={unreadNotifCount > 0 ? String(unreadNotifCount) : undefined} isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
             <MenuButton icon={<User />} label="Profil UMKM" isActive={activeMenu === "profile"} onClick={() => setActiveMenu("profile")} />
           </nav>
         </div>

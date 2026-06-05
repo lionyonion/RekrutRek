@@ -24,36 +24,30 @@ exports.apply = async (req, res, next) => {
       distance_km = await getRealDistanceKm(profile.latitude, profile.longitude, job.latitude, job.longitude)
     }
 
-    let match_score = null
-    let score_detail = null
     try {
-      const aiResult = await aiService.getMatchScore(
-        {
-          salary_expect: profile?.salary_expect,
-          availability:  profile?.availability,
-          distance_km,
-          cv_features:   profile?.cv_extracted, // hasil ekstraksi CV
-        },
-        {
-          salary_min:     job.salary_min,
-          salary_max:     job.salary_max,
-          job_type:       job.job_type,
-          max_distance_km: job.max_distance_km,
-        }
-      )
-      match_score  = aiResult.match_score
-      score_detail = aiResult.score_detail
-    } catch {
-      
-      console.warn('⚠️  AI service tidak tersedia — lamaran disimpan tanpa skor')
+      await aiService.syncCandidate({
+        id: applicant_id,
+        name: profile?.full_name,
+        skills_description: profile?.bio || profile?.full_name || '',
+        expected_salary: profile?.salary_expect,
+      })
+      await aiService.syncJob({
+        id: job.id,
+        title: job.title,
+        description: [job.description, job.requirements].filter(Boolean).join('. '),
+        max_budget: job.salary_max || job.salary_min || 0,
+        employer_type: job.job_type === 'umkm' ? 'UMKM' : 'CORPORATE',
+      })
+    } catch (e) {
+      console.warn('⚠️  AI sync saat apply gagal:', e.message)
     }
 
     const { rows } = await query(
       `INSERT INTO applications
-         (job_id, applicant_id, match_score, score_detail, distance_km)
-       VALUES ($1, $2, $3, $4, $5)
+         (job_id, applicant_id, distance_km)
+       VALUES ($1, $2, $3)
        RETURNING *`,
-      [job_id, applicant_id, match_score, JSON.stringify(score_detail), distance_km]
+      [job_id, applicant_id, distance_km]
     )
 
     res.status(201).json(rows[0])
@@ -98,10 +92,51 @@ exports.getApplicantsForMyJobs = async (req, res, next) => {
        ORDER BY a.match_score DESC NULLS LAST`,
       [req.user.id]
     )
-    res.json(rows)
+
+    const ranked = await applyAiRanking(rows)
+    res.json(ranked)
   } catch (err) {
     next(err)
   }
+}
+
+// Helper: overlay skor AI ke daftar pelamar, dikelompokkan per job_id
+async function applyAiRanking(rows) {
+  if (!rows.length) return rows
+
+  // Kelompokkan applicant_id per job
+  const byJob = {}
+  rows.forEach((r) => {
+    byJob[r.job_id] = byJob[r.job_id] || []
+    byJob[r.job_id].push(r.applicant_id)
+  })
+
+  // Panggil AI rank per job (best-effort, paralel)
+  const scoreMap = {} // `${job_id}|${candidate_id}` -> final_score 0..1
+  await Promise.all(
+    Object.entries(byJob).map(async ([jobId, ids]) => {
+      try {
+        const result = await aiService.rankAppliedCandidates(jobId, ids)
+        ;(result.rankings || []).forEach((r) => {
+          scoreMap[`${jobId}|${r.candidate_id}`] = r.final_score
+        })
+      } catch (e) {
+        console.warn(`AI rank job ${jobId} gagal:`, e.message)
+      }
+    })
+  )
+
+  // Gabungkan: kalau ada skor AI, override match_score (skala 0-100)
+  const enriched = rows.map((r) => {
+    const ai = scoreMap[`${r.job_id}|${r.applicant_id}`]
+    return ai != null
+      ? { ...r, match_score: Math.round(ai * 100), ai_ranked: true }
+      : r
+  })
+
+  // Urutkan ulang berdasarkan match_score tertinggi
+  enriched.sort((a, b) => (b.match_score ?? -1) - (a.match_score ?? -1))
+  return enriched
 }
 
 exports.getApplicantsByJob = async (req, res, next) => {
@@ -119,7 +154,9 @@ exports.getApplicantsByJob = async (req, res, next) => {
        ORDER BY a.match_score DESC NULLS LAST`,
       [req.params.id, req.user.id]
     )
-    res.json(rows)
+
+    const ranked = await applyAiRanking(rows)
+    res.json(ranked)
   } catch (err) {
     next(err)
   }

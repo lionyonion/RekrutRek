@@ -5,7 +5,6 @@ const aiService       = require('../services/aiService')
 const uploadToStorage = require('../utils/storageUpload')
 const { authMiddleware, requireRole } = require('../middleware/auth')
 
-// POST /api/cv/upload — Upload PDF ke Supabase Storage, ekstraksi AI, simpan ke profil
 router.post(
   '/upload',
   authMiddleware,
@@ -15,7 +14,7 @@ router.post(
     if (!req.file)
       return res.status(400).json({ error: 'File PDF wajib diupload' })
     try {
-      // Upload buffer ke Supabase Storage bucket 'cvs'
+     
       const cv_url = await uploadToStorage(
         'cvs',
         req.file.buffer,
@@ -23,30 +22,37 @@ router.post(
         req.file.mimetype
       )
 
-      // Kirim buffer ke AI service untuk ekstraksi
-      let extracted = null
-      try {
-        extracted = await aiService.extractCV(req.file.buffer, req.file.originalname)
-      } catch (aiErr) {
-        console.warn('AI extractCV gagal:', aiErr.message)
-      }
-
-      // Simpan cv_url dan hasil ekstraksi ke profil
+    
       await query(
-        `UPDATE jobseeker_profiles
-         SET cv_url = $1, cv_extracted = $2
-         WHERE user_id = $3`,
-        [cv_url, JSON.stringify(extracted), req.user.id]
+        `UPDATE jobseeker_profiles SET cv_url = $1 WHERE user_id = $2`,
+        [cv_url, req.user.id]
       )
 
-      res.json({ cv_url, extracted, ai_available: extracted !== null })
+      let ai_synced = false
+      try {
+        const { rows } = await query(
+          'SELECT full_name, bio, salary_expect FROM jobseeker_profiles WHERE user_id = $1',
+          [req.user.id]
+        )
+        const p = rows[0] || {}
+        await aiService.syncCandidate({
+          id: req.user.id,
+          name: p.full_name,
+          skills_description: p.bio || p.full_name || '',
+          expected_salary: p.salary_expect,
+        })
+        ai_synced = true
+      } catch (aiErr) {
+        console.warn('AI syncCandidate gagal:', aiErr.message)
+      }
+
+      res.json({ cv_url, ai_available: ai_synced })
     } catch (err) {
       next(err)
     }
   }
 )
 
-// GET /api/cv/result — Ambil hasil ekstraksi tersimpan
 router.get('/result', authMiddleware, async (req, res, next) => {
   try {
     const { rows } = await query(

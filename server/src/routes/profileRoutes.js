@@ -3,6 +3,7 @@ const { query }       = require('../config/db');
 const { authMiddleware } = require('../middleware/auth');
 const { uploadImage } = require('../middleware/upload');
 const uploadToStorage = require('../utils/storageUpload');
+const aiService       = require('../services/aiService');
 
 const PROFILE_TABLES = {
   jobseeker: 'jobseeker_profiles',
@@ -37,7 +38,6 @@ router.get('/', authMiddleware, async (req, res, next) => {
   }
 });
 
-// PUT /api/profile
 router.put('/', authMiddleware, async (req, res, next) => {
   try {
     const userType = req.user.user_type?.toLowerCase();
@@ -50,15 +50,12 @@ router.put('/', authMiddleware, async (req, res, next) => {
 
     const fields = { ...req.body };
 
-    // Hapus field yang tidak relevan atau dikelola endpoint lain
     EXCLUDED.forEach(k => delete fields[k])
 
-    // Hapus nilai null/undefined agar tidak merusak kolom yang belum ada
     Object.keys(fields).forEach(k => {
       if (fields[k] === null || fields[k] === undefined || fields[k] === '') delete fields[k]
     })
 
-    // Mapping 'nama' dari frontend ke 'full_name' di database (Supabase)
     if (fields.nama) {
       fields.full_name = fields.nama;
       delete fields.nama;
@@ -81,6 +78,18 @@ router.put('/', authMiddleware, async (req, res, next) => {
        RETURNING *`,
       [req.user.id, ...values]
     );
+
+    // Sinkronkan profil pelamar ke AI engine (best-effort)
+    if (userType === 'jobseeker') {
+      const p = rows[0] || {};
+      aiService.syncCandidate({
+        id: req.user.id,
+        name: p.full_name,
+        skills_description: p.bio || p.full_name || '',
+        expected_salary: p.salary_expect,
+      }).catch((e) => console.warn('AI syncCandidate gagal:', e.message));
+    }
+
     res.json(rows[0]);
   } catch (err) {
     next(err);

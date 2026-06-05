@@ -1,59 +1,64 @@
-const fetch    = require('node-fetch')
-const FormData = require('form-data')
+const fetch = require('node-fetch')
 
 const AI_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000'
 
-/**
- * Kirim file PDF ke FastAPI → return JSON hasil ekstraksi AI
- * @param {Buffer} fileBuffer - buffer isi file PDF
- * @param {string} originalName - nama file asli
- * @returns {Object} { name, skills, education, experience, ... }
- */
-exports.extractCV = async (fileBuffer, originalName = 'cv.pdf') => {
-  const form = new FormData()
-  form.append('file', fileBuffer, {
-    filename:    originalName,
-    contentType: 'application/pdf',
-  })
-
-  const res = await fetch(`${AI_URL}/extract-cv`, {
-    method:  'POST',
-    body:    form,
-    headers: form.getHeaders(),
-    timeout: 30000, // LLM bisa lambat — tunggu 30 detik
-  })
-
-  if (!res.ok) {
-    const errText = await res.text()
-    throw new Error(`AI extract-cv gagal (${res.status}): ${errText}`)
-  }
-  return res.json()
-}
-
-/**
- * Kirim data tabular ke FastAPI → return skor kecocokan
- * @param {Object} applicantData - profil + fitur pelamar
- * @param {Object} jobData       - data lowongan
- * @returns {{ match_score: number, score_detail: Object }}
- */
-exports.getMatchScore = async (applicantData, jobData) => {
-  const res = await fetch(`${AI_URL}/match-score`, {
-    method:  'POST',
+async function postJSON(path, body, { timeout = 15000 } = {}) {
+  const res = await fetch(`${AI_URL}${path}`, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ applicant: applicantData, job: jobData }),
-    timeout: 15000,
+    body: JSON.stringify(body),
+    timeout,
+  })
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '')
+    throw new Error(`AI ${path} gagal (${res.status}): ${txt}`)
+  }
+  return res.json()
+}
+
+/**
+ * Sinkronkan profil pelamar ke AI engine (ChromaDB).
+ * @param {{ id, name, skills_description, expected_salary }} data
+ */
+exports.syncCandidate = (data) =>
+  postJSON('/api/v1/sync/candidate', {
+    id: String(data.id),
+    name: data.name || 'Tanpa Nama',
+    skills_description: data.skills_description || '',
+    expected_salary: parseInt(data.expected_salary) || 0,
   })
 
-  if (!res.ok) {
-    // Fallback ringan — jangan crash aplikasi jika AI tidak responsif
-    console.warn(`⚠️  AI match-score error (${res.status}) — menggunakan fallback`)
-    return {
-      match_score:  null,
-      score_detail: { fallback: true, reason: 'AI service tidak tersedia' },
-    }
-  }
+/**
+ * Sinkronkan lowongan ke AI engine (ChromaDB).
+ * @param {{ id, title, description, max_budget, employer_type }} data
+ */
+exports.syncJob = (data) =>
+  postJSON('/api/v1/sync/job', {
+    id: String(data.id),
+    title: data.title || '',
+    description: data.description || '',
+    max_budget: parseInt(data.max_budget) || 0,
+    employer_type: (data.employer_type || 'UMKM').toUpperCase(),
+  })
 
-  return res.json()
-  // Ekspektasi response dari FastAPI:
-  // { match_score: 87.3, score_detail: { salary: 90, distance: 85, availability: 88 } }
-}
+/**
+ * Rangking pelamar yang SUDAH melamar pada satu lowongan.
+ * @param {string} jobId
+ * @param {string[]} appliedCandidateIds
+ * @returns {Promise<{ job_id, rankings: Array }>}
+ **/
+exports.rankAppliedCandidates = (jobId, appliedCandidateIds, opts = {}) =>
+  postJSON('/api/v1/rank/applied-candidates', {
+    job_id: String(jobId),
+    applied_candidate_ids: appliedCandidateIds.map(String),
+    weight_ai: opts.weight_ai ?? 0.7,
+    weight_salary: opts.weight_salary ?? 0.3,
+  })
+
+exports.recommendJobs = (candidateId, opts = {}) =>
+  postJSON('/api/v1/recommend/jobs', {
+    target_id: String(candidateId),
+    weight_ai: opts.weight_ai ?? 0.7,
+    weight_salary: opts.weight_salary ?? 0.3,
+    top_k: opts.top_k ?? 10,
+  })

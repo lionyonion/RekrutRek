@@ -6,6 +6,7 @@ import {
   ExternalLink, Navigation, X, Store,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useReadNotifs } from '../hooks/useReadNotifs';
 import { MenuButton, MobileMenuButton, InputField } from "../components/SharedUI";
 import MapPicker from "../components/MapPicker";
 import { profileService, jobService, applicationService } from "../services/api";
@@ -106,6 +107,7 @@ function ApplicantModal({ applicant, onClose, onStatusChange }) {
 export default function CorporateDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { unreadCount, markAllRead } = useReadNotifs("notif_read_corporate");
 
   const [activeMenu, setActiveMenu] = useState('home');
   const [selectedApplicant, setSelectedApplicant] = useState(null);
@@ -231,6 +233,15 @@ export default function CorporateDashboard() {
   };
 
   const pendingApplicants = applicants.filter((a) => a.status === "pending");
+  const notifIds = pendingApplicants.map((a) => a.id);
+  const unreadNotifCount = unreadCount(notifIds);
+
+  useEffect(() => {
+    if (activeMenu === "notifications" && notifIds.length > 0) {
+      markAllRead(notifIds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMenu, pendingApplicants.length]);
   const topApplicants = [...applicants]
     .filter((a) => a.match_score)
     .sort((a, b) => b.match_score - a.match_score)
@@ -271,7 +282,7 @@ export default function CorporateDashboard() {
             <MenuButton icon={<Home />} label="Home" isActive={activeMenu === "home"} onClick={() => setActiveMenu("home")} />
             <MenuButton icon={<Search />} label="Lowongan" isActive={activeMenu === "jobs"} onClick={() => setActiveMenu("jobs")} />
             <MenuButton icon={<Cpu />} label="AI Screening" badge={applicants.length > 0 ? String(applicants.length) : undefined} isActive={activeMenu === "screening"} onClick={() => setActiveMenu("screening")} />
-            <MenuButton icon={<Bell />} label="Notifikasi" badge={pendingApplicants.length > 0 ? String(pendingApplicants.length) : undefined} isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
+            <MenuButton icon={<Bell />} label="Notifikasi" badge={unreadNotifCount > 0 ? String(unreadNotifCount) : undefined} isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
             <MenuButton icon={<User />} label="Profil Perusahaan" isActive={activeMenu === "profile"} onClick={() => setActiveMenu("profile")} />
           </nav>
         </div>

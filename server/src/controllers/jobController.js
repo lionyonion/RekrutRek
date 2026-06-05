@@ -1,5 +1,6 @@
 const { query } = require('../config/db')
 const haversineKm = require('../utils/haversine')
+const aiService = require('../services/aiService')
 
 exports.getJobs = async (req, res, next) => {
   try {
@@ -86,7 +87,18 @@ exports.createJob = async (req, res, next) => {
       [req.user.id, title, description, requirements, job_type,
        salary_min, salary_max, latitude, longitude, address, max_distance_km]
     )
-    res.status(201).json(rows[0])
+
+    const job = rows[0]
+
+    aiService.syncJob({
+      id: job.id,
+      title: job.title,
+      description: [job.description, job.requirements].filter(Boolean).join('. '),
+      max_budget: job.salary_max || job.salary_min || 0,
+      employer_type: job_type === 'umkm' ? 'UMKM' : 'CORPORATE',
+    }).catch((e) => console.warn('AI syncJob gagal:', e.message))
+
+    res.status(201).json(job)
   } catch (err) {
     next(err)
   }
