@@ -3,13 +3,11 @@ const aiService    = require('../services/aiService')
 const haversineKm  = require('../utils/haversine')
 const getRealDistanceKm = require('../utils/pathfinder') // TAMBAHKAN BARIS INI
 
-// ── POST /api/applications ────────────────────────────────
 exports.apply = async (req, res, next) => {
   try {
     const { job_id } = req.body
     const applicant_id = req.user.id
 
-    // Ambil data job & profil pelamar secara paralel
     const [jobRes, profileRes] = await Promise.all([
       query('SELECT * FROM jobs WHERE id = $1 AND is_open = true', [job_id]),
       query('SELECT * FROM jobseeker_profiles WHERE user_id = $1', [applicant_id]),
@@ -21,13 +19,11 @@ exports.apply = async (req, res, next) => {
     const job     = jobRes.rows[0]
     const profile = profileRes.rows[0]
 
-   // Hitung jarak tempat tinggal (menggunakan rute jalan raya OSRM)
     let distance_km = null
     if (profile?.latitude && job.latitude) {
       distance_km = await getRealDistanceKm(profile.latitude, profile.longitude, job.latitude, job.longitude)
     }
 
-    // Panggil AI service untuk skor kecocokan
     let match_score = null
     let score_detail = null
     try {
@@ -48,7 +44,7 @@ exports.apply = async (req, res, next) => {
       match_score  = aiResult.match_score
       score_detail = aiResult.score_detail
     } catch {
-      // Fallback: AI service tidak tersedia, simpan lamaran tanpa skor
+      
       console.warn('⚠️  AI service tidak tersedia — lamaran disimpan tanpa skor')
     }
 
@@ -68,14 +64,15 @@ exports.apply = async (req, res, next) => {
   }
 }
 
-// ── GET /api/applications/my ──────────────────────────────
 exports.getMyApplications = async (req, res, next) => {
   try {
     const { rows } = await query(
-      `SELECT a.*, j.title, j.address, j.salary_min, j.salary_max,
-              j.job_type
+      `SELECT a.*, j.title, j.address, j.salary_min, j.salary_max, j.job_type,
+              COALESCE(up.business_name, cp.company_name) AS poster_name
        FROM applications a
        JOIN jobs j ON a.job_id = j.id
+       LEFT JOIN umkm_profiles up ON j.poster_id = up.user_id
+       LEFT JOIN corporate_profiles cp ON j.poster_id = cp.user_id
        WHERE a.applicant_id = $1
        ORDER BY a.applied_at DESC`,
       [req.user.id]
@@ -86,8 +83,27 @@ exports.getMyApplications = async (req, res, next) => {
   }
 }
 
-// ── GET /api/applications/job/:id ─────────────────────────
-// Untuk UMKM/Korporat melihat semua pelamar, diurutkan skor
+exports.getApplicantsForMyJobs = async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT a.*,
+              u.email,
+              jp.full_name, jp.phone, jp.cv_url, jp.salary_expect, jp.availability,
+              j.title AS job_title, j.job_type
+       FROM applications a
+       JOIN users u ON a.applicant_id = u.id
+       LEFT JOIN jobseeker_profiles jp ON a.applicant_id = jp.user_id
+       JOIN jobs j ON a.job_id = j.id
+       WHERE j.poster_id = $1
+       ORDER BY a.match_score DESC NULLS LAST`,
+      [req.user.id]
+    )
+    res.json(rows)
+  } catch (err) {
+    next(err)
+  }
+}
+
 exports.getApplicantsByJob = async (req, res, next) => {
   try {
     const { rows } = await query(
@@ -109,7 +125,6 @@ exports.getApplicantsByJob = async (req, res, next) => {
   }
 }
 
-// ── PUT /api/applications/:id/status ─────────────────────
 exports.updateStatus = async (req, res, next) => {
   try {
     const { status } = req.body

@@ -1,28 +1,29 @@
 const multer = require('multer')
-const path   = require('path')
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) =>
-    cb(null, path.join(__dirname, '../../uploads')),
-  filename: (_req, file, cb) => {
-    const ext  = path.extname(file.originalname)
-    const name = `cv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}${ext}`
-    cb(null, name)
-  },
-})
+const memoryStorage = multer.memoryStorage()
 
-const fileFilter = (_req, file, cb) => {
-  if (file.mimetype === 'application/pdf')
-    return cb(null, true)
+const cvFilter = (_req, file, cb) => {
+  if (file.mimetype === 'application/pdf') return cb(null, true)
   cb(new Error('Hanya file PDF yang diizinkan'), false)
+}
+
+const imageFilter = (_req, file, cb) => {
+  if (['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) return cb(null, true)
+  cb(new Error('Hanya file JPG/PNG/WEBP yang diizinkan'), false)
 }
 
 const maxSizeMB = parseInt(process.env.MAX_FILE_SIZE_MB || '5')
 
 const upload = multer({
-  storage,
-  fileFilter,
+  storage: memoryStorage,
+  fileFilter: cvFilter,
   limits: { fileSize: maxSizeMB * 1024 * 1024 },
 })
 
-module.exports = upload
+const uploadImage = multer({
+  storage: memoryStorage,
+  fileFilter: imageFilter,
+  limits: { fileSize: 2 * 1024 * 1024 },
+})
+
+module.exports = { upload, uploadImage }

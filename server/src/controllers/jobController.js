@@ -1,7 +1,6 @@
 const { query } = require('../config/db')
 const haversineKm = require('../utils/haversine')
 
-// ── GET /api/jobs ─────────────────────────────────────────
 exports.getJobs = async (req, res, next) => {
   try {
     const { type, lat, lng, max_km = 50, page = 1, limit = 10 } = req.query
@@ -28,7 +27,6 @@ exports.getJobs = async (req, res, next) => {
       [...params, limit, offset]
     )
 
-    // Filter jarak di sisi JS jika ada koordinat user
     let jobs = rows
     if (lat && lng) {
       jobs = rows.filter(j => {
@@ -48,7 +46,6 @@ exports.getJobs = async (req, res, next) => {
   }
 }
 
-// ── GET /api/jobs/:id ─────────────────────────────────────
 exports.getJobById = async (req, res, next) => {
   try {
     const { rows } = await query(
@@ -69,7 +66,6 @@ exports.getJobById = async (req, res, next) => {
   }
 }
 
-// ── POST /api/jobs ────────────────────────────────────────
 exports.createJob = async (req, res, next) => {
   try {
     const {
@@ -96,7 +92,23 @@ exports.createJob = async (req, res, next) => {
   }
 }
 
-// ── DELETE /api/jobs/:id ──────────────────────────────────
+exports.getMyJobs = async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT j.*, COUNT(a.id)::int AS applicant_count
+       FROM jobs j
+       LEFT JOIN applications a ON j.id = a.job_id
+       WHERE j.poster_id = $1
+       GROUP BY j.id
+       ORDER BY j.created_at DESC`,
+      [req.user.id]
+    )
+    res.json(rows)
+  } catch (err) {
+    next(err)
+  }
+}
+
 exports.deleteJob = async (req, res, next) => {
   try {
     const { rowCount } = await query(

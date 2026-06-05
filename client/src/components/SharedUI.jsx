@@ -10,7 +10,9 @@ export function InputField({
   icon,
   onChange,
   defaultValue,
+  value,
   placeholder,
+  disabled,
 }) {
   return (
     <div>
@@ -24,10 +26,15 @@ export function InputField({
         <input
           type={type}
           name={name}
+          value={value}
           defaultValue={defaultValue}
           placeholder={placeholder || `Masukkan ${label.toLowerCase()}`}
-          className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white border border-[#2C263F]/10 text-[#2C263F] placeholder-[#2C263F]/30 focus:outline-none focus:border-[#F8C662] focus:ring-1 focus:ring-[#F8C662] transition-all"
-          required
+          disabled={disabled}
+          className={`w-full pl-12 pr-4 py-3.5 rounded-xl border text-[#2C263F] placeholder-[#2C263F]/30 focus:outline-none focus:border-[#F8C662] focus:ring-1 focus:ring-[#F8C662] transition-all ${
+            disabled
+              ? "bg-[#2C263F]/5 border-[#2C263F]/5 cursor-not-allowed opacity-70"
+              : "bg-white border-[#2C263F]/10"
+          }`}
           onChange={onChange}
         />
       </div>
@@ -65,9 +72,6 @@ export function MenuButton({ icon, label, isActive, badge, onClick }) {
   );
 }
 
-// ==========================================
-// SHARED COMPONENT: MobileMenuButton (Bottom Nav)
-// ==========================================
 export function MobileMenuButton({ icon, label, isActive, onClick }) {
   return (
     <button

@@ -10,10 +10,11 @@ import {
   Building2,
   CheckCircle,
 } from "lucide-react";
+
+// Sesuaikan path import ini jika berbeda
 import { roleConfig } from "../constants/theme";
 import { InputField } from "../components/SharedUI";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+import { useAuth } from "../hooks/useAuth"; // <-- WAJIB IMPORT INI
 
 // ==========================================
 // PAGE: AuthPage (Login & Register)
@@ -21,6 +22,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000
 export default function AuthPage({ isLogin }) {
   const navigate = useNavigate();
   const { roleId } = useParams();
+  
+  // Mengambil fungsi login dan register dari context (api.js)
+  const { login, register } = useAuth();
 
   const role = roleConfig[roleId];
   if (!role)
@@ -32,47 +36,42 @@ export default function AuthPage({ isLogin }) {
 
   const [formData, setFormData] = useState({});
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
+    setIsLoading(true);
+
     const { email, password, confirmPassword, ...otherData } = formData;
 
     try {
       if (isLogin) {
-        // --- LOGIN ---
-        const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, role: roleId }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Login gagal");
-
-      } else {
-        // --- REGISTER ---
-        if (roleId === "jobseeker" && password !== confirmPassword) {
-          alert("Konfirmasi password tidak cocok!");
-          return;
+        // --- LOGIN MENGGUNAKAN USEAUTH ---
+        const loggedInUser = await login(email, password);
+        
+        if (loggedInUser.user_type !== roleId) {
+          setErrorMsg(`Akses ditolak! Akun ini terdaftar sebagai ${loggedInUser.user_type}, bukan ${roleId}.`);
+          setIsLoading(false);
+          return; 
         }
-
-        const payload = { email, password, role: roleId, ...otherData };
-        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Registrasi gagal");
+      } else {
+        await register(email, password, roleId, otherData);
       }
 
       setIsSuccess(true);
       setTimeout(() => navigate(`/dashboard/${roleId}`), 1500);
     } catch (error) {
-      alert(`Terjadi kesalahan: ${error.message}`);
+      // Tangkap pesan error dari backend
+      const pesan = error.response?.data?.error || error.message || "Gagal memproses permintaan.";
+      setErrorMsg(pesan);
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,6 +187,13 @@ export default function AuthPage({ isLogin }) {
               </p>
             </div>
 
+            {/* Menampilkan kotak error merah jika ada kesalahan login/register */}
+            {errorMsg && (
+              <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 text-sm font-semibold rounded-r-lg">
+                {errorMsg}
+              </div>
+            )}
+
             {isSuccess ? (
               <div className="bg-green-50 border border-green-200 text-green-700 p-6 rounded-2xl flex flex-col items-center text-center">
                 <CheckCircle className="w-12 h-12 mb-3 text-green-500" />
@@ -301,13 +307,14 @@ export default function AuthPage({ isLogin }) {
 
                 <button
                   type="submit"
-                  className="w-full mt-8 py-4 rounded-xl font-bold text-white transition-transform hover:-translate-y-1"
+                  disabled={isLoading}
+                  className={`w-full mt-8 py-4 rounded-xl font-bold text-white transition-transform ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:-translate-y-1'}`}
                   style={{
                     background: `linear-gradient(135deg, ${role.color}, #15121F)`,
                     boxShadow: `0 10px 20px ${role.color}30`,
                   }}
                 >
-                  {isLogin ? "Masuk" : "Daftar"}
+                  {isLoading ? "Memproses..." : (isLogin ? "Masuk" : "Daftar")}
                 </button>
 
                 <div className="text-center mt-4 text-sm text-[#2C263F]/60 font-medium">

@@ -1,6 +1,5 @@
 const express = require('express')
 const cors    = require('cors')
-const path    = require('path')
 
 // ── Routes ───────────────────────────────────────────────
 const authRoutes        = require('./routes/authRoutes')
@@ -12,8 +11,16 @@ const cvRoutes          = require('./routes/cvRoutes')
 const app = express()
 
 // ── CORS ─────────────────────────────────────────────────
+const allowedOrigins = [
+  'https://rekrut-rek.vercel.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean)
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true)
+    cb(new Error(`CORS blocked: ${origin}`))
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -22,9 +29,6 @@ app.use(cors({
 // ── Body parsers ──────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
-
-// ── Static files (CV uploads) ─────────────────────────────
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 
 // ── API Routes ────────────────────────────────────────────
 app.use('/api/auth',         authRoutes)
@@ -43,8 +47,6 @@ app.use((_req, res) =>
   res.status(404).json({ error: 'Endpoint tidak ditemukan' })
 )
 
-// ── Global error handler ──────────────────────────────────
-// eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
   console.error('🔥 Unhandled error:', err.stack)
   res.status(err.status || 500).json({
