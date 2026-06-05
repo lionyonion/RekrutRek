@@ -1,10 +1,11 @@
-const router    = require('express').Router()
-const upload    = require('../middleware/upload')
-const { query } = require('../config/db')
-const aiService = require('../services/aiService')
+const router          = require('express').Router()
+const { upload }      = require('../middleware/upload')
+const { query }       = require('../config/db')
+const aiService       = require('../services/aiService')
+const uploadToStorage = require('../utils/storageUpload')
 const { authMiddleware, requireRole } = require('../middleware/auth')
 
-// POST /api/cv/upload — Upload PDF, ekstraksi AI, simpan ke profil
+// POST /api/cv/upload — Upload PDF ke Supabase Storage, ekstraksi AI, simpan ke profil
 router.post(
   '/upload',
   authMiddleware,
@@ -14,12 +15,18 @@ router.post(
     if (!req.file)
       return res.status(400).json({ error: 'File PDF wajib diupload' })
     try {
-      const cv_url = `/uploads/${req.file.filename}`
+      // Upload buffer ke Supabase Storage bucket 'cvs'
+      const cv_url = await uploadToStorage(
+        'cvs',
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype
+      )
 
-      // Kirim ke AI service untuk ekstraksi
+      // Kirim buffer ke AI service untuk ekstraksi
       let extracted = null
       try {
-        extracted = await aiService.extractCV(req.file.path)
+        extracted = await aiService.extractCV(req.file.buffer, req.file.originalname)
       } catch (aiErr) {
         console.warn('AI extractCV gagal:', aiErr.message)
       }
@@ -32,11 +39,7 @@ router.post(
         [cv_url, JSON.stringify(extracted), req.user.id]
       )
 
-      res.json({
-        cv_url,
-        extracted,
-        ai_available: extracted !== null,
-      })
+      res.json({ cv_url, extracted, ai_available: extracted !== null })
     } catch (err) {
       next(err)
     }

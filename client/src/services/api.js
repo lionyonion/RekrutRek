@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://rekrutrek.onrender.com/api',
   headers: { 'Content-Type': 'application/json' },
   timeout: 30000,
 })
@@ -35,6 +35,13 @@ export const authService = {
 export const profileService = {
   get:    ()     => api.get('profile'),
   update: (data) => api.put('profile', data),
+  uploadPhoto: (file) => {
+    const formData = new FormData()
+    formData.append('photo', file)
+    return api.post('profile/photo', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
 }
 
 export const jobService = {
@@ -51,6 +58,10 @@ export const applicationService = {
   getForMyJobs: ()           => api.get('applications/my-jobs'),
   getByJob:     (id)         => api.get(`applications/job/${id}`),
   updateStatus: (id, status) => api.put(`applications/${id}/status`, { status }),
+}
+
+export const notificationService = {
+  getForPoster: () => applicationService.getForMyJobs(),
 }
 
 export const cvService = {

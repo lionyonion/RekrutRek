@@ -1,18 +1,18 @@
 const fetch    = require('node-fetch')
 const FormData = require('form-data')
-const fs       = require('fs')
 
 const AI_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000'
 
 /**
  * Kirim file PDF ke FastAPI → return JSON hasil ekstraksi AI
- * @param {string} filePath  - path file PDF di server
+ * @param {Buffer} fileBuffer - buffer isi file PDF
+ * @param {string} originalName - nama file asli
  * @returns {Object} { name, skills, education, experience, ... }
  */
-exports.extractCV = async (filePath) => {
+exports.extractCV = async (fileBuffer, originalName = 'cv.pdf') => {
   const form = new FormData()
-  form.append('file', fs.createReadStream(filePath), {
-    filename:    'cv.pdf',
+  form.append('file', fileBuffer, {
+    filename:    originalName,
     contentType: 'application/pdf',
   })
 
