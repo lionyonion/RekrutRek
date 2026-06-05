@@ -12,7 +12,7 @@ const app = express()
 
 // ── CORS ─────────────────────────────────────────────────
 const allowedOrigins = [
-  'https://rekrut-rek.vercel.app',
+  'https://rekrutrek.onrender.com',
   process.env.FRONTEND_URL,
 ].filter(Boolean)
 

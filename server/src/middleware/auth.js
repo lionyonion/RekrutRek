@@ -1,9 +1,4 @@
 const jwt = require('jsonwebtoken')
-
-/**
- * Middleware verifikasi JWT.
- * Ambil token dari header: Authorization: Bearer <token>
- */
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer '))
@@ -21,10 +16,7 @@ const authMiddleware = (req, res, next) => {
   }
 }
 
-/**
- * Middleware role-based access.
- * Contoh pemakaian: requireRole('umkm', 'corporate')
- */
+
 const requireRole = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user?.user_type))
     return res.status(403).json({

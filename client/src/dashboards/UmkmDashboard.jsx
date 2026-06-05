@@ -594,7 +594,9 @@ export default function UmkmDashboard() {
                       </button>
                     </div>
                     <MapPicker
+                      initialAddress={profile.address || ''}
                       onLocationSelect={(lat, lng) => setProfile((prev) => ({ ...prev, latitude: lat, longitude: lng }))}
+                      onAddressFound={(addr) => setProfile((prev) => ({ ...prev, address: addr }))}
                     />
                   </div>
 

@@ -15,8 +15,6 @@ import {
   Bell,
   LogOut,
   DollarSign,
-  HeartHandshake,
-  Video,
   UploadCloud,
   Camera,
   User,
@@ -132,6 +130,14 @@ export default function JobseekerDashboard() {
       .getAll()
       .then((res) => setJobs(res.data?.jobs || []))
       .catch((err) => console.error("Gagal memuat lowongan:", err));
+  }, []);
+
+  // Fetch lamaran saat mount + saat buka tab applications
+  useEffect(() => {
+    applicationService
+      .getMy()
+      .then((res) => setMyApplications(res.data || []))
+      .catch((err) => console.error("Gagal memuat lamaran:", err));
   }, []);
 
   useEffect(() => {
@@ -250,32 +256,53 @@ export default function JobseekerDashboard() {
   const displayName = profile.nama || "Pelamar";
   const displayInitials = getInitials(displayName);
 
-  const jobseekerNotifs = [
-    {
-      id: 1,
-      title: "UMKM Bahagia Tertarik!",
-      desc: 'Profilmu sangat cocok untuk posisi <b>Kasir Toko</b> (Match 95%).<br/><br/>Pihak UMKM telah mereview profilmu dan ingin melanjutkan ke tahap selanjutnya. Apakah kamu bersedia membagikan kontak WhatsApp?',
-      time: "2 jam yang lalu",
-      type: "match",
-      icon: <HeartHandshake className="w-6 h-6" />,
-      bgClass: "bg-red-50",
-      textClass: "text-red-500",
-      actionLabel: "Bagikan Kontak",
-      actionBgClass: "bg-red-500",
-    },
-    {
-      id: 2,
-      title: "Jadwal Interview Corporate",
-      desc: '<b>PT Rekrut Teknologi</b> menjadwalkan interview untuk posisi Junior Frontend Dev.<br/><br/>Jadwal: <b>Besok pukul 09:00 WIB</b><br/>Via: Google Meet<br/><br/>Harap konfirmasi kehadiran Anda.',
-      time: "1 hari yang lalu",
-      type: "interview",
-      icon: <Video className="w-6 h-6" />,
-      bgClass: "bg-purple-50",
-      textClass: "text-purple-500",
-      actionLabel: "Konfirmasi Hadir",
-      actionBgClass: "bg-[#595082]",
-    },
-  ];
+  // Buat notifikasi dari data lamaran yang statusnya berubah
+  const realNotifs = myApplications
+    .filter((app) => ["accepted", "rejected", "reviewed"].includes(app.status))
+    .map((app) => {
+      const isUmkm = app.job_type === "umkm";
+      if (app.status === "accepted") {
+        return {
+          id: app.id,
+          title: isUmkm ? "🎉 UMKM Tertarik dengan Kamu!" : "🎉 Lamaran Diterima!",
+          desc: `<b>${app.poster_name || "Perusahaan"}</b> menerima lamaranmu untuk posisi <b>${app.title}</b>.<br/><br/>${isUmkm ? "Pihak UMKM ingin melanjutkan ke tahap selanjutnya. Siapkan dirimu!" : "Selamat! Kamu berhasil melewati tahap seleksi."}`,
+          time: new Date(app.applied_at).toLocaleDateString("id-ID", { day: "numeric", month: "long" }),
+          type: "accepted",
+          icon: <CheckCircle className="w-6 h-6" />,
+          bgClass: "bg-green-50",
+          textClass: "text-green-600",
+          actionLabel: "Lihat Lamaran",
+          actionBgClass: "bg-green-600",
+        };
+      }
+      if (app.status === "rejected") {
+        return {
+          id: app.id,
+          title: "Lamaran Tidak Dilanjutkan",
+          desc: `<b>${app.poster_name || "Perusahaan"}</b> tidak melanjutkan lamaranmu untuk posisi <b>${app.title}</b>.<br/><br/>Jangan menyerah! Masih banyak lowongan lain yang cocok untukmu.`,
+          time: new Date(app.applied_at).toLocaleDateString("id-ID", { day: "numeric", month: "long" }),
+          type: "rejected",
+          icon: <Bell className="w-6 h-6" />,
+          bgClass: "bg-red-50",
+          textClass: "text-red-500",
+          actionLabel: "Cari Lowongan Lain",
+          actionBgClass: "bg-red-500",
+        };
+      }
+      // reviewed
+      return {
+        id: app.id,
+        title: "Lamaran Sedang Ditinjau",
+        desc: `<b>${app.poster_name || "Perusahaan"}</b> sedang meninjau lamaranmu untuk posisi <b>${app.title}</b>.<br/><br/>Harap bersabar, mereka akan segera memberikan keputusan.`,
+        time: new Date(app.applied_at).toLocaleDateString("id-ID", { day: "numeric", month: "long" }),
+        type: "reviewed",
+        icon: <FileText className="w-6 h-6" />,
+        bgClass: "bg-blue-50",
+        textClass: "text-blue-500",
+        actionLabel: "Lihat Detail",
+        actionBgClass: "bg-blue-500",
+      };
+    });
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans flex flex-col md:flex-row selection:bg-[#F8C662] selection:text-[#2C263F]">
@@ -293,7 +320,7 @@ export default function JobseekerDashboard() {
             <MenuButton icon={<Search />} label="Cari Lowongan" isActive={activeMenu === "search"} onClick={() => setActiveMenu("search")} />
             <MenuButton icon={<Map />} label="Peta Lowongan" isActive={activeMenu === "map"} onClick={() => setActiveMenu("map")} />
             <MenuButton icon={<FileText />} label="Lamaran Saya" badge={myApplications.length > 0 ? String(myApplications.length) : undefined} isActive={activeMenu === "applications"} onClick={() => setActiveMenu("applications")} />
-            <MenuButton icon={<Bell />} label="Notifikasi" badge="2" isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
+            <MenuButton icon={<Bell />} label="Notifikasi" badge={realNotifs.length > 0 ? String(realNotifs.length) : undefined} isActive={activeMenu === "notifications"} onClick={() => setActiveMenu("notifications")} />
             <MenuButton icon={<User />} label="Profil Saya" isActive={activeMenu === "profile"} onClick={() => setActiveMenu("profile")} />
           </nav>
         </div>
@@ -675,23 +702,45 @@ export default function JobseekerDashboard() {
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-10">
               <h2 className="text-3xl font-black text-[#2C263F] mb-2">Notifikasi 🔔</h2>
-              <p className="text-[#2C263F]/60">Pembaruan terbaru tentang lamaran dan akunmu.</p>
+              <p className="text-[#2C263F]/60">Pembaruan status lamaran kamu dari UMKM dan Corporate.</p>
             </header>
-            <div className="flex flex-col gap-4">
-              {jobseekerNotifs.map((notif) => (
-                <div key={notif.id} onClick={() => setSelectedNotif(notif)} className="bg-white border-2 border-[#2C263F]/5 rounded-2xl p-5 flex gap-4 hover:shadow-md hover:border-[#2C263F]/20 transition-all cursor-pointer">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${notif.bgClass} ${notif.textClass}`}>{notif.icon}</div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-bold text-[#2C263F] text-lg">{notif.title}</h4>
-                      <div className={`w-2 h-2 rounded-full ${notif.type === "match" ? "bg-red-500" : "bg-purple-500"} mt-2`} />
+            {realNotifs.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {realNotifs.map((notif) => {
+                  const dotColor = notif.type === "accepted" ? "bg-green-500"
+                    : notif.type === "rejected" ? "bg-red-500"
+                    : "bg-blue-500";
+                  return (
+                    <div key={notif.id} onClick={() => setSelectedNotif(notif)}
+                      className="bg-white border-2 border-[#2C263F]/5 rounded-2xl p-5 flex gap-4 hover:shadow-md hover:border-[#2C263F]/20 transition-all cursor-pointer">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${notif.bgClass} ${notif.textClass}`}>
+                        {notif.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-bold text-[#2C263F] text-base">{notif.title}</h4>
+                          <div className={`w-2 h-2 rounded-full ${dotColor} mt-2 shrink-0`} />
+                        </div>
+                        <p className="text-sm text-[#2C263F]/70 line-clamp-2" dangerouslySetInnerHTML={{ __html: notif.desc }} />
+                        <span className="text-xs font-bold text-[#2C263F]/40 mt-2 block">{notif.time}</span>
+                      </div>
                     </div>
-                    <p className="text-sm text-[#2C263F]/70 line-clamp-2" dangerouslySetInnerHTML={{ __html: notif.desc }} />
-                    <span className="text-xs font-bold text-[#2C263F]/40 mt-3 block">{notif.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-white border border-[#2C263F]/10 rounded-3xl p-10 text-center">
+                <Bell className="w-12 h-12 text-[#2C263F]/20 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-[#2C263F]">Belum Ada Notifikasi</h3>
+                <p className="text-sm text-[#2C263F]/50 mt-2">
+                  Notifikasi akan muncul saat UMKM atau Corporate merespon lamaranmu.
+                </p>
+                <button onClick={() => setActiveMenu("search")}
+                  className="mt-4 px-6 py-2.5 bg-[#41644A] text-white rounded-xl text-sm font-bold hover:bg-[#213722] transition-colors">
+                  Cari Lowongan
+                </button>
+              </div>
+            )}
           </div>
         )}
 

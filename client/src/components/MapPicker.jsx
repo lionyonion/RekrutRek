@@ -1,76 +1,146 @@
-import { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useRef, useState } from 'react'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
-export default function MapPicker({ onLocationSelect }) {
-  const mapContainerRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markerRef = useRef(null);
-  const [position, setPosition] = useState({ lat: -6.261493, lng: 106.810600 });
+const DEFAULT_LAT = -6.261493
+const DEFAULT_LNG = 106.810600
+
+export default function MapPicker({ onLocationSelect, onAddressFound, initialAddress = '' }) {
+  const mapContainerRef = useRef(null)
+  const mapInstanceRef  = useRef(null)
+  const markerRef       = useRef(null)
+
+  const [position, setPosition]       = useState({ lat: DEFAULT_LAT, lng: DEFAULT_LNG })
+  const [searchInput, setSearchInput] = useState(initialAddress)
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchError, setSearchError] = useState(null)
+
+  const handleSearch = async (e) => {
+    e?.preventDefault()
+    const q = searchInput.trim()
+    if (!q) return
+    setIsSearching(true)
+    setSearchError(null)
+    try {
+      const res  = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=id`,
+        { headers: { 'Accept-Language': 'id', 'User-Agent': 'RekrutRek/1.0' } }
+      )
+      const data = await res.json()
+      if (data.length === 0) {
+        setSearchError('Alamat tidak ditemukan. Coba lebih spesifik.')
+        return
+      }
+      const lat = parseFloat(data[0].lat)
+      const lng = parseFloat(data[0].lon)
+      movePin(lat, lng)
+      if (onAddressFound) onAddressFound(data[0].display_name)
+    } catch {
+      setSearchError('Gagal mencari alamat. Cek koneksi internet.')
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  const movePin = (lat, lng) => {
+    setPosition({ lat, lng })
+    markerRef.current?.setLatLng([lat, lng])
+    mapInstanceRef.current?.setView([lat, lng], 16)
+    if (onLocationSelect) onLocationSelect(lat, lng)
+  }
+
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const res  = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+        { headers: { 'Accept-Language': 'id', 'User-Agent': 'RekrutRek/1.0' } }
+      )
+      const data = await res.json()
+      if (data?.display_name) {
+        setSearchInput(data.display_name)
+        if (onAddressFound) onAddressFound(data.display_name)
+      }
+    } catch { /* silent */ }
+  }
 
   useEffect(() => {
-    // Mencegah peta render ganda di React
-    if (!mapInstanceRef.current && mapContainerRef.current) {
-      
-      // 1. Inisialisasi peta Leaflet murni
-      const map = L.map(mapContainerRef.current).setView([position.lat, position.lng], 13);
-      
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-      }).addTo(map);
+    if (mapInstanceRef.current || !mapContainerRef.current) return
 
-      // 2. Fix icon bawaan leaflet yang sering hilang di React
-      const defaultIcon = L.icon({
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41]
-      });
+    const map = L.map(mapContainerRef.current).setView(
+      [DEFAULT_LAT, DEFAULT_LNG], 13
+    )
 
-      // 3. Tambahkan Pin (Marker) ke peta
-      const marker = L.marker([position.lat, position.lng], { icon: defaultIcon }).addTo(map);
-      markerRef.current = marker;
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+    }).addTo(map)
 
-      // 4. Event saat area peta diklik
-      map.on('click', (e) => {
-        const { lat, lng } = e.latlng;
-        marker.setLatLng([lat, lng]); // Geser pin
-        setPosition({ lat, lng });    // Update angka di layar
-        
-        if (onLocationSelect) {
-          onLocationSelect(lat, lng); // Kirim ke halaman formulir
-        }
-      });
+    const defaultIcon = L.icon({
+      iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      iconSize:  [25, 41],
+      iconAnchor:[12, 41],
+    })
 
-      mapInstanceRef.current = map;
-    }
+    const marker = L.marker([DEFAULT_LAT, DEFAULT_LNG], { icon: defaultIcon, draggable: true }).addTo(map)
+    markerRef.current = marker
 
-    // Cleanup memori saat pindah halaman
+    // Klik peta → pindah pin + reverse geocode
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng
+      movePin(lat, lng)
+      reverseGeocode(lat, lng)
+    })
+
+    // Drag pin → update + reverse geocode
+    marker.on('dragend', () => {
+      const { lat, lng } = marker.getLatLng()
+      setPosition({ lat, lng })
+      if (onLocationSelect) onLocationSelect(lat, lng)
+      reverseGeocode(lat, lng)
+    })
+
+    mapInstanceRef.current = map
+
     return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, []); 
+      mapInstanceRef.current?.remove()
+      mapInstanceRef.current = null
+    }
+  }, [])
 
   return (
-    <div className="w-full mb-4">
-      <label className="block text-gray-700 text-sm font-bold mb-2">
-        Tandai Lokasi di Peta
-      </label>
-      
-      {/* Wadah Peta */}
-      <div 
-        ref={mapContainerRef} 
-        className="h-64 w-full rounded-lg overflow-hidden border border-gray-300 relative z-0"
-      ></div>
-      
-      <p className="text-xs text-gray-500 mt-2">
-        *Klik area peta untuk menggeser pin lokasi.<br/>
-        Koordinat terpilih: <span className="font-semibold text-gray-700">{position.lat.toFixed(6)}, {position.lng.toFixed(6)}</span>
+    <div className="w-full space-y-2">
+      <form onSubmit={handleSearch} className="flex gap-2">
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => { setSearchInput(e.target.value); setSearchError(null) }}
+          placeholder="Ketik nama jalan, kelurahan, kota… lalu Enter"
+          className="flex-1 px-4 py-2.5 rounded-xl border border-[#2C263F]/10 bg-[#FDFBF7] text-sm text-[#2C263F] focus:outline-none focus:border-[#F8C662] focus:ring-1 focus:ring-[#F8C662] transition-all"
+        />
+        <button
+          type="submit"
+          disabled={isSearching}
+          className="px-4 py-2.5 bg-[#41644A] text-white rounded-xl text-sm font-bold hover:bg-[#213722] transition-colors disabled:opacity-50 whitespace-nowrap"
+        >
+          {isSearching ? '...' : '🔍 Cari'}
+        </button>
+      </form>
+
+      {searchError && (
+        <p className="text-xs text-red-500 font-medium px-1">{searchError}</p>
+      )}
+
+      {/* Peta */}
+      <div
+        ref={mapContainerRef}
+        className="h-64 w-full rounded-xl overflow-hidden border border-[#2C263F]/10 shadow-sm relative z-0"
+      />
+  
+      <p className="text-xs text-[#2C263F]/50">
+        💡 Ketik alamat lalu klik <b>Cari</b>, atau klik/drag pin langsung di peta.
+        Koordinat: <span className="font-semibold text-[#2C263F]/70">{position.lat.toFixed(6)}, {position.lng.toFixed(6)}</span>
       </p>
     </div>
-  );
+  )
 }
