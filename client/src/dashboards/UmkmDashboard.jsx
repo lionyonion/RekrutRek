@@ -299,7 +299,7 @@ export default function UmkmDashboard() {
           </div>
         )}
 
-        {/* --- VIEW: KANDIDAT --- */}
+
         {activeMenu === "candidates" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-8">

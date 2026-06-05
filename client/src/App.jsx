@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
-import ProtectedRoute from "./components/ProtectedRoute"; // ← tambahkan import ini
+import ProtectedRoute from "./components/ProtectedRoute"; 
 
 // Pages
 import LandingPage from "./pages/LandingPage";

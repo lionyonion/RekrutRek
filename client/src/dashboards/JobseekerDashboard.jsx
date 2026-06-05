@@ -44,7 +44,7 @@ export default function JobseekerDashboard() {
   const [profile, setProfile] = useState({
       nama: "",
       email: user?.email || "",
-      alamat: "",
+      bio: "",
   });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -190,7 +190,6 @@ export default function JobseekerDashboard() {
         </div>
       </aside>
 
-      {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between p-4 bg-white border-b border-[#2C263F]/10 sticky top-0 z-20">
         <div className="flex items-center gap-2">
           <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-lg object-cover bg-[#2C263F]/5 p-0.5"
@@ -202,12 +201,10 @@ export default function JobseekerDashboard() {
           {displayInitials}
         </div>      </header>
 
-      {/* Main Content */}
       <main className="flex-1 p-6 sm:p-10 lg:p-12 overflow-y-auto pb-24 md:pb-12 relative">
         {selectedJob && <JobApplyModal job={selectedJob} onClose={() => setSelectedJob(null)} />}
         <NotificationModal notif={selectedNotif} onClose={() => setSelectedNotif(null)} />
 
-        {/* --- VIEW: HOME --- */}
         {activeMenu === "home" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="mb-10">
@@ -280,7 +277,7 @@ export default function JobseekerDashboard() {
           </div>
         )}
 
-        {/* --- VIEW: SEARCH --- */}
+       
         {activeMenu === "search" && (() => {
           const formatSalary = (min, max) => {
             if (!min && !max) return "Gaji Tidak Disebutkan";
@@ -317,9 +314,8 @@ export default function JobseekerDashboard() {
                   <button onClick={() => setSearchFilter("umkm")} className={`whitespace-nowrap px-6 py-2 rounded-xl text-sm font-bold transition-colors ${searchFilter === "umkm" ? "bg-[#41644A] text-white shadow-md" : "text-[#41644A]/70 hover:bg-[#41644A]/10"}`}>UMKM</button>
                   <button onClick={() => setSearchFilter("corporate")} className={`whitespace-nowrap px-6 py-2 rounded-xl text-sm font-bold transition-colors ${searchFilter === "corporate" ? "bg-[#595082] text-white shadow-md" : "text-[#595082]/70 hover:bg-[#595082]/10"}`}>Corporate</button>
                 </div>
-              </div>
+              </div> 
 
-              {/* Job List */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {filteredJobs.length > 0 ? (
                   filteredJobs.map((job) => (
@@ -368,7 +364,6 @@ export default function JobseekerDashboard() {
           );
         })()}
 
-        {/* --- VIEW: PROFILE --- */}
         {activeMenu === "profile" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-8">
@@ -392,7 +387,7 @@ export default function JobseekerDashboard() {
                 <div className="flex-1 w-full space-y-5">
                   <InputField label="Nama Lengkap" name="nama" icon={<User className="w-5 h-5" />} value={profile.nama || ""} onChange={handleProfileChange} />
                   <InputField label="Email" name="email" type="email" icon={<Mail className="w-5 h-5" />} value={profile.email || ""} disabled />
-                  <InputField label="Alamat Domisili" name="alamat" icon={<MapPin className="w-5 h-5" />} value={profile.alamat || ""} onChange={handleProfileChange} />
+                  <InputField label="Bio / Tentang Saya" name="bio" icon={<MapPin className="w-5 h-5" />} value={profile.bio || ""} onChange={handleProfileChange} />
                   <div>
                     <label className="block text-xs font-bold text-[#2C263F] mb-1.5 uppercase tracking-wide opacity-80">Curriculum Vitae (CV)</label>
                     <div className="border-2 border-dashed border-[#2C263F]/20 rounded-2xl p-6 flex flex-col items-center justify-center bg-[#FDFBF7] hover:bg-[#2C263F]/5 cursor-pointer transition-colors group">
@@ -412,7 +407,6 @@ export default function JobseekerDashboard() {
           </div>
         )}
 
-        {/* --- VIEW: NOTIFICATIONS --- */}
         {activeMenu === "notifications" && (
           <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
             <header className="mb-10">
@@ -437,7 +431,6 @@ export default function JobseekerDashboard() {
           </div>
         )}
 
-        {/* --- VIEW: APPLICATIONS --- */}
         {activeMenu === "applications" && (() => {
           const statusLabel = { pending: "Menunggu Review", reviewed: "Ditinjau", accepted: "Diterima", rejected: "Ditolak" };
           const statusStyle = {
@@ -502,7 +495,6 @@ export default function JobseekerDashboard() {
         })()}
       </main>
 
-      {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-[#2C263F]/10 pb-safe z-30">
         <div className="flex items-center justify-around p-2">
           <MobileMenuButton icon={<Home />} label="Home" isActive={activeMenu === "home"} onClick={() => setActiveMenu("home")} />
