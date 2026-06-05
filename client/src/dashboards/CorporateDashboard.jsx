@@ -10,10 +10,15 @@ import { MenuButton, MobileMenuButton, InputField } from "../components/SharedUI
 import MapPicker from "../components/MapPicker";
 import { profileService, jobService, applicationService } from "../services/api";
 
+const resolveUrl = (url) => {
+  if (!url) return null
+  if (url.startsWith('blob:') || url.startsWith('http')) return url
+  return `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${url}`
+}
+
 // Modal review CV kandidat corporate
 function ApplicantModal({ applicant, onClose, onStatusChange }) {
   if (!applicant) return null;
-  const API_BASE = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2C263F]/60 backdrop-blur-sm">
@@ -68,7 +73,7 @@ function ApplicantModal({ applicant, onClose, onStatusChange }) {
 
           {applicant.cv_url ? (
             <a
-              href={`${API_BASE}${applicant.cv_url}`}
+              href={resolveUrl(applicant.cv_url)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full py-3 bg-[#595082] text-white rounded-xl font-bold text-sm hover:bg-[#2C263F] transition-colors"
@@ -105,7 +110,6 @@ export default function CorporateDashboard() {
   const [activeMenu, setActiveMenu] = useState('home');
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const photoInputRef = useRef(null);
-  const API_BASE = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
   const [profile, setProfile] = useState({
     company_name: "", industry: "", address: "", hrd_name: "", company_size: "",
@@ -275,7 +279,7 @@ export default function CorporateDashboard() {
           <div className="p-4 rounded-2xl bg-[#595082]/10 border border-[#595082]/20 mb-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#595082] text-[#F8C662] flex items-center justify-center font-bold overflow-hidden">
               {photoPreview
-                ? <img src={photoPreview.startsWith("blob:") ? photoPreview : `${API_BASE}${photoPreview}`} alt="foto" className="w-full h-full object-cover" />
+                ? <img src={resolveUrl(photoPreview)} alt="foto" className="w-full h-full object-cover" />
                 : displayInitials}
             </div>
             <div>
@@ -585,7 +589,7 @@ export default function CorporateDashboard() {
                 <div className="flex flex-col items-center gap-4">
                   <div className="w-32 h-32 rounded-2xl bg-[#595082]/10 border-4 border-white shadow-lg flex items-center justify-center text-[#595082] relative overflow-hidden">
                     {photoPreview
-                      ? <img src={photoPreview.startsWith("blob:") ? photoPreview : `${API_BASE}${photoPreview}`} alt="foto" className="w-full h-full object-cover" />
+                      ? <img src={resolveUrl(photoPreview)} alt="foto" className="w-full h-full object-cover" />
                       : <Building2 className="w-12 h-12" />}
                     <button onClick={() => photoInputRef.current?.click()} disabled={isUploadingPhoto}
                       className="absolute bottom-1 right-1 p-2 bg-[#595082] rounded-full shadow-md text-white hover:scale-110 transition-transform disabled:opacity-50">

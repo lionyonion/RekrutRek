@@ -27,9 +27,14 @@ import { profileService, jobService, applicationService } from "../services/api"
 import { useAuth } from "../hooks/useAuth";
 
 // Modal untuk review CV + detail kandidat
+const resolveUrl = (url) => {
+  if (!url) return null
+  if (url.startsWith('blob:') || url.startsWith('http')) return url
+  return `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${url}`
+}
+
 function CandidateModal({ candidate, onClose, onStatusChange }) {
   if (!candidate) return null;
-  const API_BASE = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2C263F]/60 backdrop-blur-sm">
@@ -84,7 +89,7 @@ function CandidateModal({ candidate, onClose, onStatusChange }) {
 
           {candidate.cv_url ? (
             <a
-              href={`${API_BASE}${candidate.cv_url}`}
+              href={resolveUrl(candidate.cv_url)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full py-3 bg-[#41644A] text-white rounded-xl font-bold text-sm hover:bg-[#213722] transition-colors"
@@ -195,7 +200,6 @@ export default function UmkmDashboard() {
 
   const displayName = profile.business_name || "UMKM";
   const displayInitials = getInitials(displayName);
-  const API_BASE = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
   const [myJobs, setMyJobs] = useState([]);
   const [candidates, setCandidates] = useState([]);
@@ -292,7 +296,7 @@ export default function UmkmDashboard() {
           <div className="p-4 rounded-2xl bg-[#F8C662]/10 border border-[#F8C662]/20 mb-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#41644A] text-[#F8C662] flex items-center justify-center font-bold overflow-hidden">
               {photoPreview
-                ? <img src={photoPreview.startsWith("blob:") ? photoPreview : `${API_BASE}${photoPreview}`} alt="foto" className="w-full h-full object-cover" />
+                ? <img src={resolveUrl(photoPreview)} alt="foto" className="w-full h-full object-cover" />
                 : displayInitials}
             </div>
             <div>
@@ -550,7 +554,7 @@ export default function UmkmDashboard() {
                 <div className="flex flex-col items-center gap-4">
                   <div className="w-32 h-32 rounded-2xl bg-[#F8C662]/10 border-4 border-white shadow-lg flex items-center justify-center text-[#F8C662] relative overflow-hidden">
                     {photoPreview
-                      ? <img src={photoPreview.startsWith("blob:") ? photoPreview : `${API_BASE}${photoPreview}`} alt="foto" className="w-full h-full object-cover" />
+                      ? <img src={resolveUrl(photoPreview)} alt="foto" className="w-full h-full object-cover" />
                       : <Store className="w-12 h-12 text-[#41644A]" />}
                     <button onClick={() => photoInputRef.current?.click()} disabled={isUploadingPhoto}
                       className="absolute bottom-1 right-1 p-2 bg-[#41644A] rounded-full shadow-md text-white hover:scale-110 transition-transform disabled:opacity-50">

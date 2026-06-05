@@ -34,6 +34,12 @@ import JobMapView from "../components/JobMapView";
 import { profileService, jobService, applicationService, cvService } from "../services/api";
 import { useAuth } from "../hooks/useAuth";
 
+const resolveUrl = (url) => {
+  if (!url) return null
+  if (url.startsWith('blob:') || url.startsWith('http')) return url
+  return `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${url}`
+}
+
 const haversineKm = (lat1, lng1, lat2, lng2) => {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -295,7 +301,7 @@ export default function JobseekerDashboard() {
           <div className="p-4 rounded-2xl bg-[#41644A]/10 border border-[#41644A]/20 mb-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#41644A] text-[#F8C662] flex items-center justify-center font-bold overflow-hidden">
               {photoPreview
-                ? <img src={photoPreview.startsWith('blob:') ? photoPreview : `${import.meta.env.VITE_API_URL?.replace('/api','') || 'http://localhost:5000'}${photoPreview}`} alt="foto" className="w-full h-full object-cover" />
+                ? <img src={resolveUrl(photoPreview)} alt="foto" className="w-full h-full object-cover" />
                 : displayInitials}
             </div>
             <div>
@@ -318,7 +324,7 @@ export default function JobseekerDashboard() {
         </div>
         <div className="w-8 h-8 rounded-full bg-[#41644A] text-[#F8C662] flex items-center justify-center font-bold text-sm overflow-hidden">
           {photoPreview
-            ? <img src={photoPreview.startsWith('blob:') ? photoPreview : `${import.meta.env.VITE_API_URL?.replace('/api','') || 'http://localhost:5000'}${photoPreview}`} alt="foto" className="w-full h-full object-cover" />
+            ? <img src={resolveUrl(photoPreview)} alt="foto" className="w-full h-full object-cover" />
             : displayInitials}
         </div>
       </header>
@@ -581,7 +587,7 @@ export default function JobseekerDashboard() {
                   <div className="w-32 h-32 rounded-full bg-[#41644A]/10 border-4 border-white shadow-lg flex items-center justify-center text-[#41644A] relative overflow-hidden">
                     {photoPreview ? (
                       <img
-                        src={photoPreview.startsWith("blob:") ? photoPreview : `${import.meta.env.VITE_API_URL?.replace('/api','') || 'http://localhost:5000'}${photoPreview}`}
+                        src={resolveUrl(photoPreview)}
                         alt="Foto profil"
                         className="w-full h-full object-cover"
                       />
