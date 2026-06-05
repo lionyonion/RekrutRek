@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Briefcase,
@@ -14,18 +15,62 @@ import {
 import { theme, roleConfig } from "../constants/theme";
 
 // ==========================================
+// SUB-KOMPONEN: FounderCard
+// Pakai useState agar fallback inisial bekerja
+// dengan benar saat foto gagal dimuat
+// ==========================================
+function FounderCard({ founder }) {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div className="flex flex-col items-center group">
+      <div className="w-32 h-32 mb-6">
+        {imgError ? (
+          // Fallback: tampilkan inisial
+          <div
+            className="w-32 h-32 rounded-full flex items-center justify-center text-3xl font-black border-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(248,198,98,0.3)]"
+            style={{
+              background: theme.card,
+              borderColor: theme.border,
+              color: theme.rekColor,
+            }}
+          >
+            {founder.initials}
+          </div>
+        ) : (
+          // Foto asli
+          <img
+            src={founder.photo}
+            alt={founder.name}
+            className="w-32 h-32 rounded-full object-cover border-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(248,198,98,0.3)]"
+            style={{ borderColor: theme.border }}
+            onError={() => setImgError(true)}
+          />
+        )}
+      </div>
+      <h4 className="text-lg font-bold text-white mb-1 text-center">
+        {founder.name}
+      </h4>
+      <p className="text-sm font-medium text-center" style={{ color: theme.rekColor }}>
+        {founder.role}
+      </p>
+    </div>
+  );
+}
+
+// ==========================================
 // PAGE: Landing Page
 // ==========================================
 export default function LandingPage() {
   const navigate = useNavigate();
 
   const founders = [
-    { name: "Muhammad Arif Rachmat",    role: "AI Engineer",                initials: "AR", photo: "/pendiri1.png" },
-    { name: "Athaya Khalishah",         role: "AI Engineer",                initials: "AK", photo: "/pendiri2.jpeg" },
-    { name: "Steven Wijaya Lim",        role: "Data Scientist",             initials: "SW", photo: "/pendiri3.jpeg" },
-    { name: "Muhammad Rezki L",         role: "Data Scientist",             initials: "MR", photo: "/pendiri4.jpeg" },
-    { name: "Naila Atha Syahira",       role: "Full-Stack Web Developer",   initials: "NA", photo: "/pendiri5.png" },
-    { name: "Liony Dewinta Anggraeni",  role: "Full-Stack Web Developer",   initials: "LD", photo: "/pendiri6.png" },
+    { name: "Muhammad Arif Rachmat",    role: "AI Engineer",                initials: "AR", photo: "/pendiri1.jpg" },
+    { name: "Athaya Khalishah",         role: "AI Engineer",                initials: "AK", photo: "/pendiri2.jpg" },
+    { name: "Steven Wijaya Lim",        role: "Data Scientist",             initials: "SW", photo: "/pendiri3.jpg" },
+    { name: "Muhammad Rezki L",         role: "Data Scientist",             initials: "MR", photo: "/pendiri4.jpg" },
+    { name: "Naila Atha Syahira",       role: "Full-Stack Web Developer",   initials: "NA", photo: "/pendiri5.jpg" },
+    { name: "Liony Dewinta Anggraeni",  role: "Full-Stack Web Developer",   initials: "LD", photo: "/pendiri6.jpg" },
   ];
 
   const roleIcons = {
@@ -230,40 +275,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 max-w-4xl mx-auto">
             {founders.map((founder, idx) => (
-              <div key={idx} className="flex flex-col items-center group">
-                <div className="relative w-32 h-32 mb-6">
-                  <img
-                    src={founder.photo}
-                    alt={founder.name}
-                    className="w-32 h-32 rounded-full object-cover border-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(248,198,98,0.3)]"
-                    style={{ borderColor: theme.border }}
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      e.target.nextSibling.style.display = "flex";
-                    }}
-                  />
-                  {/* Fallback inisial jika foto gagal load */}
-                  <div
-                    className="hidden w-32 h-32 rounded-full items-center justify-center text-3xl font-black border-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(248,198,98,0.3)]"
-                    style={{
-                      background: theme.card,
-                      borderColor: theme.border,
-                      color: theme.rekColor,
-                    }}
-                  >
-                    {founder.initials}
-                  </div>
-                </div>
-                <h4 className="text-lg font-bold text-white mb-1 text-center">
-                  {founder.name}
-                </h4>
-                <p
-                  className="text-sm font-medium text-center"
-                  style={{ color: theme.rekColor }}
-                >
-                  {founder.role}
-                </p>
-              </div>
+              <FounderCard key={idx} founder={founder} />
             ))}
           </div>
         </div>
