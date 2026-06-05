@@ -65,12 +65,12 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   const founders = [
-    { name: "Muhammad Arif Rachmat",    role: "AI Engineer",                initials: "AR", photo: "/pendiri1.jpg" },
-    { name: "Athaya Khalishah",         role: "AI Engineer",                initials: "AK", photo: "/pendiri2.jpg" },
-    { name: "Steven Wijaya Lim",        role: "Data Scientist",             initials: "SW", photo: "/pendiri3.jpg" },
-    { name: "Muhammad Rezki L",         role: "Data Scientist",             initials: "MR", photo: "/pendiri4.jpg" },
-    { name: "Naila Atha Syahira",       role: "Full-Stack Web Developer",   initials: "NA", photo: "/pendiri5.jpg" },
-    { name: "Liony Dewinta Anggraeni",  role: "Full-Stack Web Developer",   initials: "LD", photo: "/pendiri6.jpg" },
+    { name: "Muhammad Arif Rachmat",    role: "AI Engineer",                initials: "AR", photo: "/pendiri1.png" },
+    { name: "Athaya Khalishah",         role: "AI Engineer",                initials: "AK", photo: "/pendiri2.jpeg" },
+    { name: "Steven Wijaya Lim",        role: "Data Scientist",             initials: "SW", photo: "/pendiri3.jpeg" },
+    { name: "Muhammad Rezki L",         role: "Data Scientist",             initials: "MR", photo: "/pendiri4.jpeg" },
+    { name: "Naila Atha Syahira",       role: "Full-Stack Web Developer",   initials: "NA", photo: "/pendiri5.png" },
+    { name: "Liony Dewinta Anggraeni",  role: "Full-Stack Web Developer",   initials: "LD", photo: "/pendiri6.png" },
   ];
 
   const roleIcons = {
