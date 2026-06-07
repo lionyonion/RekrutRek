@@ -16,7 +16,7 @@ Rekrutrek adalah platform pencari kerja dan rekrutmen berbasis AI untuk UMKM dan
 
 Aplikasi ini dibangun dengan arsitektur modern yang memisahkan akses pengguna (pelamar, UMKM, dan korporasi). Sistem ini juga memanfaatkan *backend* terpisah antara layanan utama (*core system*) dan layanan *machine learning* (AI).
 
-![Arsitektur Sistem RekrutRek](./images/arsitektur_sistem.jpeg)
+![Arsitektur Sistem RekrutRek](Arsitektur-Sistem.jpeg)
 
 **Tech Stack yang digunakan:**
 
@@ -35,7 +35,7 @@ rekrutrek/
 ├── ai-service/      # FastAPI (tim AI — repo terpisah)
 └── images/          # Folder untuk menyimpan aset gambar
 
-##Panduan Instalasi & Setup
+## **Panduan Instalasi & Setup**
 
 Prasyarat:
 - Node.js
