@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Target, Building2, Home, Search, Cpu, Bell, User, LogOut,
   Bookmark, MapPin, Mail, Camera, Briefcase, Users, FileText,
-  ExternalLink, Navigation, X, Store,
+  ExternalLink, Navigation, X, Store, Trash2,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useReadNotifs } from '../hooks/useReadNotifs';
@@ -221,6 +221,17 @@ export default function CorporateDashboard() {
     }
   };
 
+  const handleDeleteJob = async (jobId, title) => {
+    if (!window.confirm(`Yakin hapus lowongan "${title}"? Semua pelamar pada lowongan ini juga akan terhapus.`)) return;
+    try {
+      await jobService.delete(jobId);
+      const res = await jobService.getMy();
+      setMyJobs(res.data || []);
+    } catch (err) {
+      alert(err.response?.data?.error || "Gagal menghapus lowongan.");
+    }
+  };
+
   const handleStatusChange = async (appId, status) => {
     try {
       await applicationService.updateStatus(appId, status);
@@ -423,17 +434,26 @@ export default function CorporateDashboard() {
                 <h3 className="text-lg font-bold text-[#2C263F] mb-4">Lowongan Aktif</h3>
                 <div className="flex flex-col gap-3">
                   {myJobs.map((job) => (
-                    <div key={job.id} className="bg-white border border-[#2C263F]/10 rounded-2xl p-4 flex items-center justify-between">
-                      <div>
+                    <div key={job.id} className="bg-white border border-[#2C263F]/10 rounded-2xl p-4 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
                         <h4 className="font-bold text-[#2C263F]">{job.title}</h4>
                         <p className="text-xs text-[#2C263F]/60 mt-0.5">{job.applicant_count || 0} pelamar</p>
                         {job.requirements && (
                           <p className="text-xs text-[#2C263F]/50 mt-1 max-w-sm truncate">Syarat: {job.requirements}</p>
                         )}
                       </div>
-                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${job.is_open ? "bg-green-50 text-green-700 border border-green-200" : "bg-orange-50 text-orange-700 border border-orange-200"}`}>
-                        {job.is_open ? "Aktif" : "Tutup"}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${job.is_open ? "bg-green-50 text-green-700 border border-green-200" : "bg-orange-50 text-orange-700 border border-orange-200"}`}>
+                          {job.is_open ? "Aktif" : "Tutup"}
+                        </span>
+                        <button
+                          onClick={() => handleDeleteJob(job.id, job.title)}
+                          title="Hapus lowongan"
+                          className="p-2 rounded-lg text-red-500 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

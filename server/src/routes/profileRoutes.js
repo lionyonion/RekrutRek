@@ -61,7 +61,6 @@ router.put('/', authMiddleware, async (req, res, next) => {
       delete fields.nama;
     }
 
-    // Jika setelah dihapus ternyata kosong, batalkan operasi
     const keys = Object.keys(fields);
     if (keys.length === 0) {
       return res.status(400).json({ error: "Tidak ada data valid yang bisa disimpan." });

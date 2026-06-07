@@ -123,12 +123,18 @@ exports.getMyJobs = async (req, res, next) => {
 
 exports.deleteJob = async (req, res, next) => {
   try {
-    const { rowCount } = await query(
-      'DELETE FROM jobs WHERE id = $1 AND poster_id = $2',
+    // Pastikan lowongan milik user ini
+    const check = await query(
+      'SELECT id FROM jobs WHERE id = $1 AND poster_id = $2',
       [req.params.id, req.user.id]
     )
-    if (!rowCount)
+    if (!check.rows.length)
       return res.status(404).json({ error: 'Lowongan tidak ditemukan atau bukan milik Anda' })
+
+    // Hapus lamaran terkait dulu (hindari FK constraint), lalu lowongannya
+    await query('DELETE FROM applications WHERE job_id = $1', [req.params.id])
+    await query('DELETE FROM jobs WHERE id = $1 AND poster_id = $2', [req.params.id, req.user.id])
+
     res.json({ message: 'Lowongan berhasil dihapus' })
   } catch (err) {
     next(err)

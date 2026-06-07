@@ -20,6 +20,7 @@ import {
   ExternalLink,
   Navigation,
   X,
+  Trash2,
 } from "lucide-react";
 import { MenuButton, MobileMenuButton, InputField } from "../components/SharedUI";
 import MapPicker from "../components/MapPicker";
@@ -264,6 +265,17 @@ export default function UmkmDashboard() {
     }
   };
 
+  const handleDeleteJob = async (jobId, title) => {
+    if (!window.confirm(`Yakin hapus lowongan "${title}"? Semua lamaran pada lowongan ini juga akan terhapus.`)) return;
+    try {
+      await jobService.delete(jobId);
+      const res = await jobService.getMy();
+      setMyJobs(res.data || []);
+    } catch (err) {
+      alert(err.response?.data?.error || "Gagal menghapus lowongan.");
+    }
+  };
+
   // Real notifications from pending applications
   const pendingCandidates = candidates.filter((c) => c.status === "pending");
   const notifIds = pendingCandidates.map((c) => c.id);
@@ -373,17 +385,26 @@ export default function UmkmDashboard() {
             </div>
             <div className="grid gap-4">
               {myJobs.length > 0 ? myJobs.map((job) => (
-                <div key={job.id} className="bg-white border border-[#2C263F]/10 rounded-2xl p-5 flex items-center justify-between">
-                  <div>
+                <div key={job.id} className="bg-white border border-[#2C263F]/10 rounded-2xl p-5 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <h4 className="font-bold text-[#2C263F]">{job.title}</h4>
                     <p className="text-sm text-[#2C263F]/60">{job.applicant_count || 0} Pelamar</p>
                     {job.requirements && (
                       <p className="text-xs text-[#2C263F]/50 mt-1 max-w-xs truncate">Syarat: {job.requirements}</p>
                     )}
                   </div>
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${job.is_open ? "bg-green-50 text-green-700 border border-green-200" : "bg-orange-50 text-orange-700 border border-orange-200"}`}>
-                    {job.is_open ? "Aktif" : "Tutup"}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${job.is_open ? "bg-green-50 text-green-700 border border-green-200" : "bg-orange-50 text-orange-700 border border-orange-200"}`}>
+                      {job.is_open ? "Aktif" : "Tutup"}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteJob(job.id, job.title)}
+                      title="Hapus lowongan"
+                      className="p-2 rounded-lg text-red-500 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               )) : (
                 <div className="text-center py-10 bg-white border border-[#2C263F]/10 rounded-2xl">
