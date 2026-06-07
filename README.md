@@ -43,12 +43,12 @@ Prasyarat:
 
 Langkah-langkah
 
-###1. Clone Repository
+### 1. Clone Repository
 ```bash
 git clone [https://github.com/lionyonion/RekrutRek.git](https://github.com/lionyonion/RekrutRek.git)
 cd rekrutrek-main
 ```
-###2. Setup Backend
+### 2. Setup Backend
 ```bash
 # Masuk ke folder backend
 cd server
@@ -59,7 +59,7 @@ npm install
 # Inisialisasi database PostgreSQL
 npm run db:init
 ```
-###3. Setup Frontend
+### 3. Setup Frontend
 ```bash
 # Masuk ke folder frontend (dari direktori utama)
 cd client
@@ -69,14 +69,14 @@ npm install
 ```
 ## Menjalankan Aplikasi
 Anda perlu membuka dua terminal untuk menjalankan backend dan frontend secara bersamaan.
-###1. Jalankan Backend Server:
+### 1. Jalankan Backend Server:
 ```bash
 # Dari direktori server
 npm run dev
 ```
 Server akan berjalan di port yang ditentukan (misal: http://localhost:5000).
 
-###2. Jalankan Frontend App:
+### 2. Jalankan Frontend App:
 ```bash
 # Buka terminal BARU, dari direktori client
 npm run dev
