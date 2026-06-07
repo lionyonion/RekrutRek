@@ -34,7 +34,7 @@ rekrutrek/
 ├── server/          # Backend Express.js
 ├── ai-service/      # FastAPI (tim AI — repo terpisah)
 └── images/          # Folder untuk menyimpan aset gambar
-
+```
 ## **Panduan Instalasi & Setup**
 
 Prasyarat:
@@ -47,7 +47,7 @@ Langkah-langkah
 ```bash
 git clone [https://github.com/lionyonion/RekrutRek.git](https://github.com/lionyonion/RekrutRek.git)
 cd rekrutrek-main
-
+```
 ###2. Setup Backend
 ```bash
 # Masuk ke folder backend
@@ -58,29 +58,29 @@ npm install
 
 # Inisialisasi database PostgreSQL
 npm run db:init
-
+```
 ###3. Setup Frontend
-``bash
+```bash
 # Masuk ke folder frontend (dari direktori utama)
 cd client
 
 # Install semua dependency
 npm install
-
+```
 ## Menjalankan Aplikasi
 Anda perlu membuka dua terminal untuk menjalankan backend dan frontend secara bersamaan.
 ###1. Jalankan Backend Server:
 ```bash
 # Dari direktori server
 npm run dev
-
+```
 Server akan berjalan di port yang ditentukan (misal: http://localhost:5000).
 
 ###2. Jalankan Frontend App:
 ```bash
 # Buka terminal BARU, dari direktori client
 npm run dev
-
+```
 Aplikasi akan otomatis terbuka di browser Anda (misal: http://localhost:5173).
 
 ## Tim
